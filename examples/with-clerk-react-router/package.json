@@ -15,7 +15,7 @@
     "@react-router/serve": "^7.0.0",
     "@uploadthing/react": "7.3.3",
     "isbot": "^5.1.19",
-    "react": "19.2.2",
+    "react": "19.2.3",
     "react-dom": "19.2.2",
     "react-router": "^7.0.0",
     "react-router-dom": "^7.1.3",

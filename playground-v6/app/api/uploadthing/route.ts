@@ -1,4 +1,3 @@
-import { revalidateTag } from "next/cache";
 import { z } from "zod";
 
 import {
@@ -8,7 +7,6 @@ import {
 } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
-import { CACHE_TAGS } from "../../../lib/const";
 import { getSession } from "../../../lib/data";
 
 const fileRoute = createUploadthing();
@@ -28,7 +26,6 @@ export const uploadRouter = {
     })
     .onUploadComplete(async (opts) => {
       console.log("Upload complete", opts.file);
-      revalidateTag(CACHE_TAGS.LIST_FILES);
     }),
 } satisfies FileRouter;
 

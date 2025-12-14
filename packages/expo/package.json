@@ -49,7 +49,7 @@
     "expo-constants": "^16.0.0",
     "expo-document-picker": "^12.0.1",
     "expo-image-picker": "^15.0.4",
-    "react": "19.2.2",
+    "react": "19.2.3",
     "react-native": "^0.74.1",
     "tsdown": "0.17.3",
     "typescript": "5.9.3",
@@ -60,7 +60,7 @@
     "expo-constants": "*",
     "expo-document-picker": "*",
     "expo-image-picker": "*",
-    "react": "^17.0.2 || ^18.0.0 || ^19.0.0",
+    "react": "^19.2.3",
     "react-native": "*",
     "uploadthing": "^7.2.0"
   },

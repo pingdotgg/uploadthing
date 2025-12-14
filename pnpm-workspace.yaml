@@ -4,6 +4,9 @@ linkWorkspacePackages: true
 engineStrict: true
 neverBuiltDependencies: []
 
+overrides:
+  vite: 7.2.7
+
 packages:
   - "docs"
   - "examples/*"

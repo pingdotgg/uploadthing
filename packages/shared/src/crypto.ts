@@ -79,7 +79,14 @@ export const verifySignature = (
     const sigBytes = yield* Micro.fromEither(Encoding.decodeHex(sig));
     const payloadBytes = encoder.encode(payload);
     return yield* Micro.promise(() =>
-      crypto.subtle.verify(algorithm, signingKey, sigBytes, payloadBytes),
+      crypto.subtle.verify(
+        algorithm,
+        signingKey,
+        // Type mismatch...
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        sigBytes as any,
+        payloadBytes,
+      ),
     );
   }).pipe(
     Micro.withTrace("verifySignature"),
