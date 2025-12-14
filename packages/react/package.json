@@ -59,7 +59,8 @@
   "files": [
     "dist",
     "native",
-    "next-ssr-plugin"
+    "next-ssr-plugin",
+    "tanstack-ssr-plugin"
   ],
   "publishConfig": {
     "access": "public"
