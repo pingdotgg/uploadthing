@@ -4,9 +4,9 @@
   "type": "module",
   "engines": {
     "node": "^24.10.0",
-    "pnpm": "^10.24.0"
+    "pnpm": "^10.10.0"
   },
-  "packageManager": "pnpm@10.24.0",
+  "packageManager": "pnpm@10.19.0",
   "scripts": {
     "build:all": "turbo run build",
     "build:vanilla": "turbo run build --filter uploadthing...",

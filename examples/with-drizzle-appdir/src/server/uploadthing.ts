@@ -53,7 +53,7 @@ export const uploadRouter = {
       });
 
       // Revalidate the route that can be used for polling
-      revalidateTag(`/api/file/${file.key}`, "max");
+      revalidateTag(`/api/file/${file.key}`);
     }),
 } satisfies FileRouter;
 
