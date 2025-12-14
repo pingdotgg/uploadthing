@@ -49,14 +49,14 @@
     "@tailwindcss/cli": "^4.1.18",
     "@tailwindcss/vite": "^4.1.18",
     "@uploadthing/eslint-config": "workspace:*",
-    "eslint": "9.25.1",
+    "eslint": "9.39.2",
     "publint": "^0.2.7",
     "svelte": "^5.46.0",
     "svelte-check": "^4.3.4",
     "tailwindcss": "^4.1.18",
     "typescript": "5.9.3",
     "uploadthing": "workspace:*",
-    "vite": "^7.2.7"
+    "vite": "7.2.7"
   },
   "svelte": "./dist/index.js",
   "types": "./dist/index.d.ts",

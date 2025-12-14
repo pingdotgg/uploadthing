@@ -29,7 +29,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: ["expo-router"],
   experiments: {
+    tsconfigPaths: true,
     typedRoutes: true,
+    reactCanary: true,
+    reactCompiler: true,
   },
   // extra: {
   //   eas: {

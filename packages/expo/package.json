@@ -9,14 +9,14 @@
   },
   "license": "MIT",
   "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "typings": "dist/index.d.cts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "require": {
         "types": "./dist/index.d.cts",
@@ -45,13 +45,13 @@
     "@types/react": "19.2.7",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "eslint": "9.25.1",
-    "expo-constants": "^16.0.0",
-    "expo-document-picker": "^12.0.1",
-    "expo-image-picker": "^15.0.4",
+    "eslint": "9.39.2",
+    "expo-constants": "^18.0.12",
+    "expo-document-picker": "^14.0.8",
+    "expo-image-picker": "^17.0.10",
     "react": "19.2.3",
-    "react-native": "^0.74.1",
-    "tsdown": "0.17.3",
+    "react-native": "^0.83.0",
+    "tsdown": "0.17.4",
     "typescript": "5.9.3",
     "uploadthing": "workspace:*",
     "wait-on": "^9.0.3"

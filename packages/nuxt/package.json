@@ -42,11 +42,11 @@
     "@nuxt/schema": "^3.15.0",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@uploadthing/eslint-config": "workspace:*",
-    "eslint": "9.25.1",
+    "eslint": "9.39.2",
     "h3": "^1.13.0",
     "nuxt": "^3.15.0",
     "uploadthing": "workspace:*",
-    "vite": "^7.2.7",
+    "vite": "7.2.7",
     "vitest": "4.0.15"
   },
   "peerDependencies": {
