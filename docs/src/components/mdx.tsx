@@ -123,7 +123,16 @@ export function Tabs({
     </TabGroup>
   );
 }
-export const Tab = TabPanel;
+
+export function Tab({ children }: { children: React.ReactNode }) {
+  return (
+    <TabPanel>
+      <div className="[&>:first-child]:mt-0 [&>:last-child]:mb-0">
+        {children}
+      </div>
+    </TabPanel>
+  );
+}
 
 export function Row({ children }: { children: React.ReactNode }) {
   return (
