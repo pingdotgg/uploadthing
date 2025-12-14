@@ -30,4 +30,7 @@ export const uploadRouter = {
 
 export type UploadRouter = typeof uploadRouter;
 
-export const { loader, action } = createRouteHandler({ router: uploadRouter });
+const handler = createRouteHandler({ router: uploadRouter });
+
+export const loader = handler.loader;
+export const action = handler.action;
