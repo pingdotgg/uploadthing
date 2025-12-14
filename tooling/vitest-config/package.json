@@ -8,12 +8,12 @@
   },
   "devDependencies": {
     "@uploadthing/tsconfig": "workspace:*",
-    "@vitest/browser": "3.2.4",
-    "@vitest/coverage-istanbul": "3.2.4",
+    "@vitest/browser": "4.0.15",
+    "@vitest/coverage-istanbul": "4.0.15",
     "jsonc-parser": "^3.3.1",
     "nyc": "17.1.0",
     "playwright": "1.52.0",
-    "typescript": "5.8.3",
-    "vitest": "3.2.4"
+    "typescript": "5.9.3",
+    "vitest": "4.0.15"
   }
 }

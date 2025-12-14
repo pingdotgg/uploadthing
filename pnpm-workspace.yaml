@@ -14,6 +14,3 @@ packages:
   - "playground"
   - "playground-v6"
   - "tooling/*"
-
-overrides:
-  rolldown: 1.0.0-beta.32

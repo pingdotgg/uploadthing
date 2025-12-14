@@ -27,7 +27,7 @@
     "@types/react-dom": "19.2.3",
     "eslint": "9.25.1",
     "eslint-config-next": "15.5.8",
-    "typescript": "5.8.3"
+    "typescript": "5.9.3"
   },
   "ct3aMetadata": {
     "initVersion": "7.20.0"

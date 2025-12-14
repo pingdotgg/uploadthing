@@ -3,10 +3,10 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22.x",
-    "pnpm": "10.x"
+    "node": "^24.10.0",
+    "pnpm": "^10.24.0"
   },
-  "packageManager": "pnpm@10.10.0",
+  "packageManager": "pnpm@10.24.0",
   "scripts": {
     "build:all": "turbo run build",
     "build:vanilla": "turbo run build --filter uploadthing...",
@@ -40,8 +40,8 @@
     "playwright": "1.52.0",
     "prettier": "3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.9",
-    "turbo": "2.5.3-canary.1",
-    "typescript": "5.8.3",
+    "turbo": "2.6.3",
+    "typescript": "5.9.3",
     "uploadthing": "workspace:*"
   }
 }

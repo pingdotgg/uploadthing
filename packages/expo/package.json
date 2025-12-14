@@ -51,10 +51,10 @@
     "expo-image-picker": "^15.0.4",
     "react": "19.2.2",
     "react-native": "^0.74.1",
-    "tsdown": "0.14.1",
-    "typescript": "5.8.3",
+    "tsdown": "0.17.3",
+    "typescript": "5.9.3",
     "uploadthing": "workspace:*",
-    "wait-on": "^8.0.1"
+    "wait-on": "^9.0.3"
   },
   "peerDependencies": {
     "expo-constants": "*",
