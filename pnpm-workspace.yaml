@@ -1,10 +1,11 @@
-preferWorkspacePackages: true
-saveWorkspaceProtocol: false
 linkWorkspacePackages: true
 engineStrict: true
 neverBuiltDependencies: []
 
 overrides:
+  "@effect/cluster": "npm:@effect/cluster@0.55.0"
+  "@effect/rpc": "npm:@effect/rpc@0.72.2"
+  "@effect/sql": "npm:@effect/sql@0.48.6"
   "@expo/metro-runtime": "npm:@expo/metro-runtime@6.1.2"
   vite: "npm:vite@7.2.7"
   srvx: "npm:srvx@0.9.8"
