@@ -1,3 +1,0 @@
-imports.autoImport=false
-typescript.includeWorkspace=true
-experimental.typescriptBundlerResolution=true
