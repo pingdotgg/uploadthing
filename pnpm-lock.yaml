@@ -1042,6 +1042,9 @@ importers:
       '@types/react-dom':
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.7)
+      drizzle-kit:
+        specifier: 0.31.8
+        version: 0.31.8
       eslint:
         specifier: 9.25.1
         version: 9.25.1(jiti@2.4.2)
@@ -1097,6 +1100,9 @@ importers:
       '@types/react-dom':
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.7)
+      drizzle-kit:
+        specifier: 0.31.8
+        version: 0.31.8
       eslint:
         specifier: 9.25.1
         version: 9.25.1(jiti@2.4.2)
@@ -10478,6 +10484,10 @@ packages:
 
   drizzle-kit@0.30.1:
     resolution: {integrity: sha512-HmA/NeewvHywhJ2ENXD3KvOuM/+K2dGLJfxVfIHsGwaqKICJnS+Ke2L6UcSrSrtMJLJaT0Im1Qv4TFXfaZShyw==}
+    hasBin: true
+
+  drizzle-kit@0.31.8:
+    resolution: {integrity: sha512-O9EC/miwdnRDY10qRxM8P3Pg8hXe3LyU4ZipReKOgTwn4OqANmftj8XJz1UPUAS6NMHf0E2htjsbQujUTkncCg==}
     hasBin: true
 
   drizzle-orm@0.38.3:
@@ -29516,6 +29526,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  drizzle-kit@0.31.8:
+    dependencies:
+      '@drizzle-team/brocli': 0.10.2
+      '@esbuild-kit/esm-loader': 2.5.5
+      esbuild: 0.25.5
+      esbuild-register: 3.6.0(esbuild@0.25.5)
+    transitivePeerDependencies:
+      - supports-color
+
   drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.2.7)(bun-types@1.2.5)(react@19.2.2):
     optionalDependencies:
       '@cloudflare/workers-types': 4.20241230.0
@@ -29778,6 +29797,13 @@ snapshots:
     dependencies:
       debug: 4.4.1
       esbuild: 0.19.12
+    transitivePeerDependencies:
+      - supports-color
+
+  esbuild-register@3.6.0(esbuild@0.25.5):
+    dependencies:
+      debug: 4.4.1
+      esbuild: 0.25.5
     transitivePeerDependencies:
       - supports-color
 
