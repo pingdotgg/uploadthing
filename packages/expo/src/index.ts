@@ -16,9 +16,9 @@ export interface GenerateTypedHelpersOptions {
    * @example "/api/uploadthing"
    * @example "https://www.example.com/api/uploadthing"
    *
-   * If relative, host will be inferred from either the `EXPO_PUBLIC_SERVER_ORIGIN` environment variable or `ExpoConstants.hostUri`
+   * If relative, host will be inferred from either the `EXPO_PUBLIC_SERVER_URL` environment variable or `ExpoConstants.hostUri`
    *
-   * @default (process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? ExpoConstants.debuggerHost) + "/api/uploadthing"
+   * @default (process.env.EXPO_PUBLIC_SERVER_URL ?? ExpoConstants.debuggerHost) + "/api/uploadthing"
    */
   url?: URL | string;
   /**
@@ -55,17 +55,18 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
   let url = new URL("http://localhost:8081/api/uploadthing");
   try {
     url = new URL(
-      initOpts?.url ?? "/api/uploadthing",
-      typeof window.location !== "undefined"
-        ? window.location.origin
-        : (process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? `http://${debuggerHost}`),
+    	initOpts?.url ?? "/api/uploadthing",
+    	process.env.EXPO_PUBLIC_SERVER_URL ??
+    		(typeof window !== "undefined" && window.location?.origin
+    			? window.location?.origin
+    			: `http://${debuggerHost}`),
     );
   } catch (err) {
     // Can't throw since window.location is undefined in Metro pass
     // but may get defined when app mounts.
     // eslint-disable-next-line no-console
     console.warn(
-      `Failed to resolve URL from ${initOpts?.url?.toString()} and ${process.env.EXPO_PUBLIC_SERVER_ORIGIN} or ${debuggerHost}. Your application may not work as expected.`,
+      `Failed to resolve URL from ${initOpts?.url?.toString()} and ${process.env.EXPO_PUBLIC_SERVER_URL} or ${debuggerHost}. Your application may not work as expected.`,
       err,
     );
   }
