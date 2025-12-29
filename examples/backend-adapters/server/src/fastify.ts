@@ -1,11 +1,9 @@
-import "dotenv/config";
-
 import cors from "@fastify/cors";
 import Fastify from "fastify";
 
 import { createRouteHandler } from "uploadthing/fastify";
 
-import { uploadRouter } from "./router";
+import { uploadRouter } from "./router.ts";
 
 const fastify = Fastify({ logger: true });
 fastify.register(cors);

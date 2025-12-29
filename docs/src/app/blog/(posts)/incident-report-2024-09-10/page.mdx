@@ -81,15 +81,15 @@ broke _all_ files. How is that? Well, I hid a bit of the code from that first
 snippet.
 
 ```ts
-if (fileUrl?.includes('uploadthing-prod')) {
+if (fileUrl?.includes("uploadthing-prod")) {
   // <-- Pay attention here
   const newUrl = fileUrl.replace(
-    'uploadthing-prod.s3',
-    'uploadthing-prod-sea1.s3',
-  )
+    "uploadthing-prod.s3",
+    "uploadthing-prod-sea1.s3",
+  );
   // non-blocking update of KV
-  ctx.waitUntil(env.UTFS_KV.put(cacheKey, newUrl))
-  return newUrl
+  ctx.waitUntil(env.UTFS_KV.put(cacheKey, newUrl));
+  return newUrl;
 }
 ```
 

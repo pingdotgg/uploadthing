@@ -6,7 +6,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { cssInterop } from "nativewind";
+// import { cssInterop } from "nativewind";
 import {
   GestureHandlerRootView,
   RectButton,
@@ -40,14 +40,14 @@ export default function RootLayout() {
  * Add CSS Styling to some 3rd party components
  * @see https://www.nativewind.dev/v4/guides/third-party-components#handling-components-with-style-attribute-props
  */
-cssInterop(BottomSheetView, { className: "style" });
-cssInterop(BottomSheetModal, {
-  className: "style",
-  bgClassName: "backgroundStyle",
-});
-cssInterop(FeatherIcon, { className: "style" });
-cssInterop(Image, { className: "style" });
-cssInterop(RectButton, { className: "style" });
+// cssInterop(BottomSheetView, { className: "style" });
+// cssInterop(BottomSheetModal, {
+//   className: "style",
+//   bgClassName: "backgroundStyle",
+// });
+// cssInterop(FeatherIcon, { className: "style" });
+// cssInterop(Image, { className: "style" });
+// cssInterop(RectButton, { className: "style" });
 
 /**
  * Add className type to props of some 3rd party components that don't have it

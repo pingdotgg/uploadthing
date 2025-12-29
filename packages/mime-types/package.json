@@ -10,14 +10,14 @@
   "sideEffects": false,
   "license": "MIT",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "require": {
         "types": "./dist/index.d.cts",
@@ -26,8 +26,8 @@
     },
     "./application": {
       "import": {
-        "types": "./application/index.d.ts",
-        "default": "./application/index.js"
+        "types": "./application/index.d.mts",
+        "default": "./application/index.mjs"
       },
       "require": {
         "types": "./application/index.d.cts",
@@ -36,8 +36,8 @@
     },
     "./audio": {
       "import": {
-        "types": "./audio/index.d.ts",
-        "default": "./audio/index.js"
+        "types": "./audio/index.d.mts",
+        "default": "./audio/index.mjs"
       },
       "require": {
         "types": "./audio/index.d.cts",
@@ -46,8 +46,8 @@
     },
     "./image": {
       "import": {
-        "types": "./image/index.d.ts",
-        "default": "./image/index.js"
+        "types": "./image/index.d.mts",
+        "default": "./image/index.mjs"
       },
       "require": {
         "types": "./image/index.d.cts",
@@ -56,8 +56,8 @@
     },
     "./text": {
       "import": {
-        "types": "./text/index.d.ts",
-        "default": "./text/index.js"
+        "types": "./text/index.d.mts",
+        "default": "./text/index.mjs"
       },
       "require": {
         "types": "./text/index.d.cts",
@@ -66,8 +66,8 @@
     },
     "./video": {
       "import": {
-        "types": "./video/index.d.ts",
-        "default": "./video/index.js"
+        "types": "./video/index.d.mts",
+        "default": "./video/index.mjs"
       },
       "require": {
         "types": "./video/index.d.cts",
@@ -94,9 +94,9 @@
   "devDependencies": {
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "eslint": "9.25.1",
-    "tsdown": "0.14.1",
-    "typescript": "5.8.3"
+    "eslint": "9.39.2",
+    "tsdown": "0.17.4",
+    "typescript": "5.9.3"
   },
   "publishConfig": {
     "access": "public"
