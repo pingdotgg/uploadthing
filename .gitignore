@@ -19,6 +19,7 @@ build
 ios
 .expo
 expo-env.d.ts
+next-env.d.ts
 
 # solid
 .output
