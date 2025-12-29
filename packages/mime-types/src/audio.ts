@@ -88,7 +88,7 @@ export const audio = {
     extensions: ["rip"],
   },
   "audio/wav": {
-    source: "iana",
+    source: "nginx",
     extensions: ["wav"],
   },
   "audio/webm": {
