@@ -1,32 +1,47 @@
-import * as React from "react";
-import * as TSR from "@tanstack/react-router";
+/// <reference types="vite/client" />
+import type { ReactNode } from "react";
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  Scripts,
+} from "@tanstack/react-router";
 
-import uploadthingCss from "@uploadthing/react/styles.css?url";
-
-export const Route = TSR.createRootRoute({
-  component: RootComponent,
+export const Route = createRootRoute({
   head: () => ({
-    links: [{ rel: "stylesheet", href: uploadthingCss }],
+    meta: [
+      {
+        charSet: "utf-8",
+      },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
+      },
+      {
+        title: "TanStack Start Starter",
+      },
+    ],
   }),
+  component: RootComponent,
 });
 
 function RootComponent() {
   return (
     <RootDocument>
-      <TSR.Outlet />
+      <Outlet />
     </RootDocument>
   );
 }
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html>
       <head>
-        <TSR.HeadContent />
+        <HeadContent />
       </head>
       <body>
         {children}
-        <TSR.Scripts />
+        <Scripts />
       </body>
     </html>
   );
