@@ -7,6 +7,8 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 
+import uploadthingCss from "@uploadthing/react/styles.css?url";
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -21,6 +23,7 @@ export const Route = createRootRoute({
         title: "TanStack Start Starter",
       },
     ],
+    links: [{ rel: "stylesheet", href: uploadthingCss }],
   }),
   component: RootComponent,
 });
