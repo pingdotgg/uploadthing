@@ -10,6 +10,7 @@ import {
   verifyKey,
   verifySignature,
 } from "../src/crypto";
+import type { ExtractHashPartsFn } from "../src/types";
 
 describe("crypto sign / verify", () => {
   it.effect("signs and verifies a payload", () =>
@@ -196,6 +197,66 @@ describe("key gen", () => {
 
       const verified = yield* verifyKey(key, appI);
       expect(verified).toBe(true);
+    }),
+  );
+
+  it.effect("custom hashFn returning a single number generates a valid key", () =>
+    Effect.gen(function* () {
+      const appI = "foo-123";
+      const key = yield* generateKey(
+        {
+          name: "foo.txt",
+          size: 123,
+          type: "text/plain",
+          lastModified: 1000,
+        },
+        appI,
+        (file) => [file.name],
+        () => 42,
+      );
+
+      expect(key).toBeTruthy();
+      const verified = yield* verifyKey(key, appI);
+      expect(verified).toBe(true);
+    }),
+  );
+
+  it.effect("custom hashFn returning an array of numbers generates a valid key", () =>
+    Effect.gen(function* () {
+      const appI = "foo-123";
+      const key = yield* generateKey(
+        {
+          name: "foo.txt",
+          size: 123,
+          type: "text/plain",
+          lastModified: 1000,
+        },
+        appI,
+        (file) => [file.name],
+        () => [111, 222, 333, 444],
+      );
+
+      expect(key).toBeTruthy();
+      const verified = yield* verifyKey(key, appI);
+      expect(verified).toBe(true);
+    }),
+  );
+
+  it.effect("different hashFn outputs produce different keys", () =>
+    Effect.gen(function* () {
+      const appI = "foo-123";
+      const file = {
+        name: "foo.txt",
+        size: 123,
+        type: "text/plain",
+        lastModified: 1000,
+      };
+      const hashParts: ExtractHashPartsFn = (f) => [f.name];
+
+      const key1 = yield* generateKey(file, appI, hashParts, () => 100);
+      const key2 = yield* generateKey(file, appI, hashParts, () => 999);
+
+      expect(key1).not.toBe(key2);
     }),
   );
 });

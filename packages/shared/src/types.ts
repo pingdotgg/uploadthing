@@ -36,6 +36,16 @@ export type ExtractHashPartsFn = (
 ) => (string | number | undefined | null | boolean)[];
 
 /**
+ * Custom hash function for the file seed portion of the key.
+ * By default, Effect's `Hash.string` (32-bit) is used. Provide a function
+ * that returns a wider hash to increase entropy and reduce collision probability.
+ * The function receives the JSON-stringified hash parts and should return
+ * a number or an array of numbers (for wider entropy via multiple SQIds inputs).
+ * @default Hash.string (32-bit)
+ */
+export type HashFn = (input: string) => number | number[];
+
+/**
  * A subset of the standard RequestInit properties needed by UploadThing internally.
  * @see RequestInit from lib.dom.d.ts
  */
@@ -199,6 +209,15 @@ export type RouteOptions = {
    * @default (file) => [file.name, file.size, file.type, file.lastModified,  Date.now()]
    */
   getFileHashParts?: ExtractHashPartsFn;
+  /**
+   * Custom hash function for the file seed portion of the key.
+   * By default, Effect's `Hash.string` (32-bit) is used. Provide a function
+   * that returns a wider hash to increase entropy and reduce collision probability.
+   * The function receives the JSON-stringified hash parts and should return
+   * a number or an array of numbers (for wider entropy via multiple SQIds inputs).
+   * @default Hash.string (32-bit)
+   */
+  hashFn?: HashFn;
 };
 
 export type FileRouterInputKey = AllowedFileType | MimeType;
