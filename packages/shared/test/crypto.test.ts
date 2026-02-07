@@ -200,46 +200,50 @@ describe("key gen", () => {
     }),
   );
 
-  it.effect("custom hashFn returning a single number generates a valid key", () =>
-    Effect.gen(function* () {
-      const appI = "foo-123";
-      const key = yield* generateKey(
-        {
-          name: "foo.txt",
-          size: 123,
-          type: "text/plain",
-          lastModified: 1000,
-        },
-        appI,
-        (file) => [file.name],
-        () => 42,
-      );
+  it.effect(
+    "custom hashFn returning a single number generates a valid key",
+    () =>
+      Effect.gen(function* () {
+        const appI = "foo-123";
+        const key = yield* generateKey(
+          {
+            name: "foo.txt",
+            size: 123,
+            type: "text/plain",
+            lastModified: 1000,
+          },
+          appI,
+          (file) => [file.name],
+          () => 42,
+        );
 
-      expect(key).toBeTruthy();
-      const verified = yield* verifyKey(key, appI);
-      expect(verified).toBe(true);
-    }),
+        expect(key).toBeTruthy();
+        const verified = yield* verifyKey(key, appI);
+        expect(verified).toBe(true);
+      }),
   );
 
-  it.effect("custom hashFn returning an array of numbers generates a valid key", () =>
-    Effect.gen(function* () {
-      const appI = "foo-123";
-      const key = yield* generateKey(
-        {
-          name: "foo.txt",
-          size: 123,
-          type: "text/plain",
-          lastModified: 1000,
-        },
-        appI,
-        (file) => [file.name],
-        () => [111, 222, 333, 444],
-      );
+  it.effect(
+    "custom hashFn returning an array of numbers generates a valid key",
+    () =>
+      Effect.gen(function* () {
+        const appI = "foo-123";
+        const key = yield* generateKey(
+          {
+            name: "foo.txt",
+            size: 123,
+            type: "text/plain",
+            lastModified: 1000,
+          },
+          appI,
+          (file) => [file.name],
+          () => [111, 222, 333, 444],
+        );
 
-      expect(key).toBeTruthy();
-      const verified = yield* verifyKey(key, appI);
-      expect(verified).toBe(true);
-    }),
+        expect(key).toBeTruthy();
+        const verified = yield* verifyKey(key, appI);
+        expect(verified).toBe(true);
+      }),
   );
 
   it.effect("different hashFn outputs produce different keys", () =>
