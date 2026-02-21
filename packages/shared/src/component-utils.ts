@@ -7,6 +7,7 @@ import type { RenderFunction, StyleValue } from "vue";
  * We don't need all the types, and `/application`
  * entrypoint is ~7k gzip which we can shave off
  */
+import { getExtensions } from "@uploadthing/mime-types";
 import { audio } from "@uploadthing/mime-types/audio";
 import { image } from "@uploadthing/mime-types/image";
 import { text } from "@uploadthing/mime-types/text";
@@ -51,7 +52,21 @@ export const generateMimeTypes = (
 
 export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   const mimeTypes = generateMimeTypes(fileTypes);
-  return Object.fromEntries(mimeTypes.map((type) => [type, []]));
+  const extensionsMap = getExtensions();
+
+  return Object.fromEntries(
+    mimeTypes.map((type) => {
+      // Generic types produce comma-joined strings: "image/*, image/png, ..."
+      const subTypes = type.split(",").map((t) => t.trim());
+      const exts = subTypes.flatMap((mime) => {
+        const mimeExts =
+          extensionsMap[mime as keyof typeof extensionsMap] ?? [];
+        return mimeExts.map((ext) => `.${ext}`);
+      });
+
+      return [type, exts];
+    }),
+  );
 };
 
 export function getFilesFromClipboardEvent(event: ClipboardEvent) {
