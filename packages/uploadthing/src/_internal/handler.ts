@@ -581,6 +581,7 @@ const handleUploadAction = (opts: {
             file,
             appId,
             routeOptions.getFileHashParts,
+            routeOptions.hashFn,
           );
 
           const url = yield* generateSignedURL(`${ingestUrl}/${key}`, apiKey, {
