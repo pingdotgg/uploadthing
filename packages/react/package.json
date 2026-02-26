@@ -10,15 +10,15 @@
   "sideEffects": false,
   "license": "MIT",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
   "exports": {
     "./package.json": "./package.json",
     "./styles.css": "./dist/index.css",
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "require": {
         "types": "./dist/index.d.cts",
@@ -27,8 +27,8 @@
     },
     "./native": {
       "import": {
-        "types": "./native/index.d.ts",
-        "default": "./native/index.js"
+        "types": "./native/index.d.mts",
+        "default": "./native/index.mjs"
       },
       "require": {
         "types": "./native/index.d.cts",
@@ -37,19 +37,30 @@
     },
     "./next-ssr-plugin": {
       "import": {
-        "types": "./next-ssr-plugin/index.d.ts",
-        "default": "./next-ssr-plugin/index.js"
+        "types": "./next-ssr-plugin/index.d.mts",
+        "default": "./next-ssr-plugin/index.mjs"
       },
       "require": {
         "types": "./next-ssr-plugin/index.d.cts",
         "default": "./next-ssr-plugin/index.cjs"
+      }
+    },
+    "./tanstack-ssr-plugin": {
+      "import": {
+        "types": "./tanstack-ssr-plugin/index.d.mts",
+        "default": "./tanstack-ssr-plugin/index.mjs"
+      },
+      "require": {
+        "types": "./tanstack-ssr-plugin/index.d.cts",
+        "default": "./tanstack-ssr-plugin/index.cjs"
       }
     }
   },
   "files": [
     "dist",
     "native",
-    "next-ssr-plugin"
+    "next-ssr-plugin",
+    "tanstack-ssr-plugin"
   ],
   "publishConfig": {
     "access": "public"
@@ -65,40 +76,38 @@
   },
   "dependencies": {
     "@uploadthing/shared": "workspace:*",
+    "@vitest/browser-playwright": "^4.0.15",
     "file-selector": "0.6.0"
   },
   "peerDependencies": {
-    "next": "*",
-    "react": "^17.0.2 || ^18.0.0 || ^19.0.0",
+    "react": "*",
     "uploadthing": "^7.2.0"
   },
-  "peerDependenciesMeta": {
-    "next": {
-      "optional": true
-    }
-  },
   "devDependencies": {
-    "@types/node": "^22.10.0",
+    "@tailwindcss/cli": "^4.1.18",
+    "@tanstack/react-router": "^1.141.2",
+    "@tanstack/react-start": "^1.141.3",
+    "@types/node": "^25.0.2",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "@uploadthing/vitest-config": "workspace:*",
-    "@vitest/browser": "3.2.4",
-    "@vitest/coverage-istanbul": "3.2.4",
+    "@vitest/browser": "4.0.15",
+    "@vitest/coverage-istanbul": "4.0.15",
     "concurrently": "^9.1.2",
-    "eslint": "9.25.1",
+    "eslint": "9.39.2",
     "msw": "2.7.5",
-    "next": "15.5.8",
-    "react": "19.2.2",
-    "react-dom": "19.2.2",
-    "tailwindcss": "^3.4.16",
-    "tsdown": "0.14.1",
-    "typescript": "5.8.3",
+    "next": "15.5.9",
+    "react": "19.1.4",
+    "react-dom": "19.1.4",
+    "tailwindcss": "^4.1.18",
+    "tsdown": "0.17.4",
+    "typescript": "5.9.3",
     "uploadthing": "workspace:*",
-    "vitest": "3.2.4",
-    "vitest-browser-react": "0.3.0",
-    "wait-on": "^8.0.1",
+    "vitest": "4.0.15",
+    "vitest-browser-react": "2.0.2",
+    "wait-on": "^9.0.3",
     "zod": "^3.24.1"
   }
 }

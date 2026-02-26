@@ -110,11 +110,12 @@ The `genUploader` function now returns an object with two functions,
 `uploadFiles` and `createUpload`. To migrate:
 
 ```ts
-import { genUploader } from 'uploadthing/client'
-import type { UploadRouter } from '~/uploadthing/router'
+import { genUploader } from "uploadthing/client";
 
-const uploadFiles = genUploader<UploadRouter>() // [!code --]
-const { uploadFiles, createUpload } = genUploader<UploadRouter>() // [!code ++]
+import type { UploadRouter } from "~/uploadthing/router";
+
+const uploadFiles = genUploader<UploadRouter>(); // [!code --]
+const { uploadFiles, createUpload } = genUploader<UploadRouter>(); // [!code ++]
 ```
 
 ## Log levels has changed {{ tag: 'BREAKING' }}
@@ -193,18 +194,20 @@ The following were previously deprecated and have now been removed:
   `generateUploadButton` and `generateUploadDropzone` instead.
 
   ```ts
-  import { generateComponent } from '@uploadthing/react' // [!code --]
-  const { UploadButton } = generateComponent() // [!code --]
-  import { generateUploadButton } from '@uploadthing/react' // [!code ++]
-  const UploadButton = generateUploadButton() // [!code ++]
+  // [!code --]
+  import { generateComponent, generateUploadButton } from "@uploadthing/react"; // [!code --]
+
+  const { UploadButton } = generateComponent();
+  // [!code ++]
+  const UploadButton = generateUploadButton(); // [!code ++]
   ```
 
 - `@uploadthing/react/hooks` entrypoint has been removed. Use the main
   entrypoint instead.
 
   ```ts
-  import { generateReactHelpers } from '@uploadthing/react/hooks' // [!code --]
-  import { generateReactHelpers } from '@uploadthing/react' // [!code ++]
+  import { generateReactHelpers } from "@uploadthing/react"; // [!code ++]
+  import { generateReactHelpers } from "@uploadthing/react/hooks"; // [!code --]
   ```
 
 - `useUploadThing` hook result no longer returns `permittedFileInfo`. Use
@@ -295,12 +298,12 @@ as an environment variable in constant case prefixed with `UPLOADTHING`.
 
 ```ts
 const api = new UTApi({
-  logLevel: 'Info',
-})
+  logLevel: "Info",
+});
 
 // is the same as
-process.env.UPLOADTHING_LOG_LEVEL = 'Info'
-const api = new UTApi()
+process.env.UPLOADTHING_LOG_LEVEL = "Info";
+const api = new UTApi();
 ```
 
 <Note>

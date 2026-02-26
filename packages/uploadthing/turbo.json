@@ -13,6 +13,7 @@
         "h3/**",
         "next/**",
         "next-legacy/**",
+        "react-router/**",
         "remix/**",
         "server/**",
         "tw/**",

@@ -4,7 +4,10 @@
     "target": "esnext",
     "esModuleInterop": true,
     "strict": true,
-    "module": "Preserve",
+    "module": "NodeNext",
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "outDir": "dist"
   },

@@ -6,28 +6,28 @@
     "build": "next build",
     "clean": "git clean -xdf .next node_modules",
     "dev": "next dev",
-    "lint": "SKIP_ENV_VALIDATION=true next lint",
+    "lint": "SKIP_ENV_VALIDATION=true eslint src",
     "start": "next start",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.9.6",
-    "@t3-oss/env-nextjs": "^0.11.1",
+    "@clerk/nextjs": "^6.36.2",
+    "@t3-oss/env-nextjs": "^0.13.8",
     "@uploadthing/react": "7.3.3",
-    "next": "15.5.8",
-    "react": "19.2.2",
-    "react-dom": "19.2.2",
+    "next": "15.5.9",
+    "react": "19.1.4",
+    "react-dom": "19.1.4",
     "uploadthing": "7.7.4",
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "3.2.0",
-    "@types/node": "^22.10.0",
+    "@eslint/eslintrc": "3.3.3",
+    "@types/node": "^25.0.2",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
-    "eslint": "9.25.1",
-    "eslint-config-next": "15.5.8",
-    "typescript": "5.8.3"
+    "eslint": "9.39.2",
+    "eslint-config-next": "15.5.9",
+    "typescript": "5.9.3"
   },
   "ct3aMetadata": {
     "initVersion": "7.20.0"

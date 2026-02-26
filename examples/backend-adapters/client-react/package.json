@@ -9,15 +9,15 @@
   },
   "dependencies": {
     "@uploadthing/react": "7.3.3",
-    "react": "19.2.2",
-    "react-dom": "19.2.2",
+    "react": "19.1.4",
+    "react-dom": "19.1.4",
     "uploadthing": "7.7.4"
   },
   "devDependencies": {
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react-swc": "^3.7.2",
-    "typescript": "5.8.3",
-    "vite": "^6.3.4"
+    "@vitejs/plugin-react-swc": "^4.2.2",
+    "typescript": "5.9.3",
+    "vite": "7.2.7"
   }
 }

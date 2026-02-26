@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -7,7 +5,7 @@ import { logger } from "hono/logger";
 
 import { createRouteHandler } from "uploadthing/server";
 
-import { uploadRouter } from "./router";
+import { uploadRouter } from "./router.ts";
 
 const handler = createRouteHandler({
   router: uploadRouter,

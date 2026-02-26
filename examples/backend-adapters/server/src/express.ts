@@ -1,12 +1,9 @@
 import cors from "cors";
-
-import "dotenv/config";
-
 import express from "express";
 
 import { createRouteHandler } from "uploadthing/express";
 
-import { uploadRouter } from "./router";
+import { uploadRouter } from "./router.ts";
 
 const app = express();
 app.use(cors());

@@ -2,7 +2,7 @@
 
 import { createRouteHandler } from "uploadthing/server";
 
-import { uploadRouter } from "./router";
+import { uploadRouter } from "./router.ts";
 
 export interface Env {
   UPLOADTHING_TOKEN: string;

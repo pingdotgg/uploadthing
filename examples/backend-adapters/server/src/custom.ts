@@ -6,8 +6,8 @@ import { Effect } from "effect";
 import { createBuilder, makeAdapterHandler } from "uploadthing/server";
 
 type AdapterArgs = {
-  req: BunRequest;
-  server: Server;
+  req: BunRequest<string>;
+  server: Server<unknown>;
 };
 const f = createBuilder<AdapterArgs>();
 
@@ -34,9 +34,12 @@ const router = {
     }),
 };
 
-const requestHandler = makeAdapterHandler<[BunRequest, Server], AdapterArgs>(
+const requestHandler = makeAdapterHandler<
+  [BunRequest<string>, Server<unknown>],
+  AdapterArgs
+>(
   (req, server) => Effect.succeed({ req, server }),
-  (req) => Effect.succeed(req),
+  (req) => Effect.succeed(req as Request),
   {
     router,
   },
