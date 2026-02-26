@@ -1,0 +1,48 @@
+import { ArticleLayout } from "@/app/blog/_components/layouts";
+import { blogMetadata } from "@/lib/utils";
+
+export const article = {
+  authors: [
+    {
+      name: "Ping Team",
+      role: "Ping Labs",
+      src: "https://avatars.githubusercontent.com/u/89191727?s=200&v=4",
+      href: "https://x.com/pingdotgg",
+    },
+  ],
+  date: "2025-01-30",
+  title: "Own Your Data: Introducing Bring Your Own Bucket",
+  description:
+    "Store files directly in your own storage infrastructure with UploadThing's new BYOB feature. Maintain complete control over your data while keeping our great developer experience.",
+  tags: ["product"],
+  image:
+    "https://s40vlb3kca.ufs.sh/f/7v4pu1gTNmoZDLb3rL51tTUGHE3b4kLMF0PAeRIoiXBapc7O",
+};
+
+export const metadata = blogMetadata(article);
+
+export const dynamic = "force-static";
+
+export default (props) => <ArticleLayout article={article} {...props} />;
+
+## Bring Your Own Bucket (BYOB)
+
+Following up our [recent launch of usage-based pricing](/blog/usage-based),
+we're excited to release our highly-requested BYOB feature, giving you full
+control over your file storage while maintaining UploadThing's superior
+developer experience. With BYOB, you can:
+
+- Store files directly in your own storage infrastructure
+- Meet strict compliance requirements
+- Maintain complete control over your data
+
+For the initial release, we are launching with support for AWS S3 buckets, with
+more storage providers coming soon based on user demand.
+
+### Getting Started with BYOB
+
+BYOB is only available on new apps. Go the the dashboard and create a new app,
+select the BYOB tier and follow the instructions to connect your S3 bucket.
+
+For questions or support, reach out to our team at
+[support@uploadthing.com](mailto:support@uploadthing.com).
