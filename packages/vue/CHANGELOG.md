@@ -1,5 +1,12 @@
 # @uploadthing/vue
 
+## 7.3.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @uploadthing/shared@7.1.11
+
 ## 7.3.3
 
 ### Patch Changes

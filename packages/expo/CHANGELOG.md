@@ -1,5 +1,13 @@
 # @uploadthing/expo
 
+## 7.2.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @uploadthing/shared@7.1.11
+  - @uploadthing/react@7.3.4
+
 ## 7.2.6
 
 ### Patch Changes
