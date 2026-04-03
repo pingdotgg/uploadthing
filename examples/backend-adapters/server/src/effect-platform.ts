@@ -4,7 +4,6 @@ import { createServer } from "node:http";
 import {
   FetchHttpClient,
   Headers,
-  HttpApp,
   HttpMiddleware,
   HttpRouter,
   HttpServer,
