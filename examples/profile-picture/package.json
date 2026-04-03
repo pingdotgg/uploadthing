@@ -15,7 +15,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.2.0",
     "@libsql/client": "^0.14.0",
-    "@uploadthing/react": "7.3.3",
+    "@uploadthing/react": "7.3.4",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "drizzle-orm": "^0.38.3",
@@ -29,7 +29,7 @@
     "server-only": "0.0.1",
     "sonner": "^2.0.3",
     "tailwind-merge": "^2.2.1",
-    "uploadthing": "7.7.4",
+    "uploadthing": "7.7.5",
     "zod": "^3.24.1"
   },
   "devDependencies": {
