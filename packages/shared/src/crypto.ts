@@ -5,7 +5,7 @@ import * as Redacted from "effect/Redacted";
 import SQIds, { defaultOptions } from "sqids";
 
 import { UploadThingError } from "./error";
-import type { ExtractHashPartsFn, FileProperties, Time } from "./types";
+import type { ExtractHashPartsFn, FileProperties, HashFn, Time } from "./types";
 import { parseTimeToSeconds } from "./utils";
 
 const signaturePrefix = "hmac-sha256=";
@@ -90,6 +90,7 @@ export const generateKey = (
   file: FileProperties,
   appId: string,
   getHashParts?: ExtractHashPartsFn,
+  hashFn?: HashFn,
 ) =>
   Micro.sync(() => {
     // Get the parts of which we should hash to constuct the key
@@ -108,9 +109,11 @@ export const generateKey = (
 
     // Hash and Encode the parts and appId as sqids
     const alphabet = shuffle(defaultOptions.alphabet, appId);
-    const encodedFileSeed = new SQIds({ alphabet, minLength: 36 }).encode([
-      Math.abs(Hash.string(hashParts)),
-    ]);
+    const rawHash = hashFn ? hashFn(hashParts) : Hash.string(hashParts);
+    const hashArray = Array.isArray(rawHash) ? rawHash : [rawHash];
+    const encodedFileSeed = new SQIds({ alphabet, minLength: 36 }).encode(
+      hashArray.map((n) => Math.abs(n)),
+    );
     const encodedAppId = new SQIds({ alphabet, minLength: 12 }).encode([
       Math.abs(Hash.string(appId)),
     ]);
