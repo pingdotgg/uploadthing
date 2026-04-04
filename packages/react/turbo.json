@@ -3,7 +3,12 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": ["dist/**", "native/**", "next-ssr-plugin/**"]
+      "outputs": [
+        "dist/**",
+        "native/**",
+        "next-ssr-plugin/**",
+        "tanstack-ssr-plugin/**"
+      ]
     },
     "dev": {
       "persistent": false

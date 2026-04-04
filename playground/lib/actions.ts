@@ -1,13 +1,12 @@
 "use server";
 
-import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { UTApi } from "uploadthing/server";
 import { UploadFileResult } from "uploadthing/types";
 
-import { CACHE_TAGS, SESSION_COOKIE_NAME } from "./const";
+import { SESSION_COOKIE_NAME } from "./const";
 import { getSession, Session } from "./data";
 
 const utapi = new UTApi();
@@ -60,8 +59,6 @@ export async function uploadFiles(previousState: unknown, form: FormData) {
     };
   }
 
-  revalidateTag(CACHE_TAGS.LIST_FILES);
-
   const uploadedCount = uploadResults.filter(
     (result) => result.data != null,
   ).length;
@@ -98,7 +95,6 @@ export async function deleteFile(key: string) {
   }
 
   await utapi.deleteFiles(key);
-  revalidateTag(CACHE_TAGS.LIST_FILES);
 
   return {
     success: true as const,

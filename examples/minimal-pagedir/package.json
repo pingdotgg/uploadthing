@@ -10,15 +10,15 @@
   },
   "dependencies": {
     "@uploadthing/react": "7.3.3",
-    "next": "15.5.8",
-    "react": "19.2.2",
-    "react-dom": "19.2.2",
+    "next": "15.5.9",
+    "react": "19.1.4",
+    "react-dom": "19.1.4",
     "uploadthing": "7.7.4"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
+    "@types/node": "^25.0.2",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
-    "typescript": "5.8.3"
+    "typescript": "5.9.3"
   }
 }

@@ -16,7 +16,7 @@ const PACKAGES = ["react", "solid", "svelte", "vue"];
  * as well as adds content paths to detect the necessary
  * classnames
  */
-export function withUt(twConfig: Config) {
+export function withUt(twConfig: Config): Config {
   const contentPaths = PACKAGES.map((pkg) => {
     try {
       const resolved = require.resolve(`@uploadthing/${pkg}`, {
@@ -46,6 +46,7 @@ export function withUt(twConfig: Config) {
   if (Array.isArray(twConfig.content)) {
     twConfig.content.push(...contentPaths);
   } else {
+    twConfig.content ??= { files: [] };
     // content can be an object too with `files` property
     twConfig.content.files.push(...contentPaths);
   }

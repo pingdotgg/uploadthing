@@ -1,18 +1,23 @@
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
+import { createIsomorphicFn } from "@tanstack/react-start";
+
+import { setupRouterSsrUploadThingIntegration } from "@uploadthing/react/tanstack-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
 
 import { routeTree } from "./routeTree.gen";
+import { uploadRouter } from "./server/uploadthing";
 
-export function createRouter() {
+const getUploadThingRouterConfig = createIsomorphicFn().server(() => {
+  return extractRouterConfig(uploadRouter);
+});
+
+export function getRouter() {
   const router = createTanStackRouter({
     routeTree,
     scrollRestoration: true,
   });
 
-  return router;
-}
+  setupRouterSsrUploadThingIntegration(router, getUploadThingRouterConfig);
 
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: ReturnType<typeof createRouter>;
-  }
+  return router;
 }

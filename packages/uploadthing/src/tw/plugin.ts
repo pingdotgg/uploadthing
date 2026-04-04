@@ -1,4 +1,12 @@
+import type { Config } from "tailwindcss";
+import type { PluginAPI } from "tailwindcss/plugin";
 import plugin from "tailwindcss/plugin";
+
+type PluginFn = (api: PluginAPI) => void;
+interface PluginWithConfig {
+  handler: PluginFn;
+  config?: Config;
+}
 
 /**
  * UploadThing Tailwind plugin which injects custom variants
@@ -8,7 +16,7 @@ import plugin from "tailwindcss/plugin";
  * When using this, you need to specify `content` manually. For automatic
  * detection, see {@link withUt}.
  */
-export const uploadthingPlugin = plugin(($) => {
+export const uploadthingPlugin: PluginWithConfig = plugin(($) => {
   // Variants to select specific underlying element
   $.addVariant("ut-button", '&>*[data-ut-element="button"]');
   $.addVariant("ut-allowed-content", '&>*[data-ut-element="allowed-content"]');
