@@ -30,7 +30,7 @@ UPLOADTHING_TOKEN=... # A token for interacting with the SDK
 
 <Note>
   Tanstack Start is currently in beta, this guide works at the time of writing
-  (`v1.95.0`) but there might be some breaking changes introduced in the
+  (`v1.158.0`) but there might be some breaking changes introduced in the
   framework that we have not kept up to date with.
 </Note>
 
@@ -106,23 +106,32 @@ export type UploadRouter = typeof uploadRouter;
 </Note>
 
 <Warning>
-  Make sure to configure API entry handler in `app/api.ts`. For more
-  information, please refer to the [@tanstack/start
-  docs](https://tanstack.com/router/latest/docs/framework/react/start/api-routes#setting-up-the-entry-handler).
+  Server routes can be defined in the same directory as app routes,
+  `/routes/api/uploadthing.ts` will create an api route at `/api/uploadthing`.
+  For more information, please refer to the [@tanstack/start
+  docs](https://tanstack.com/start/latest/docs/framework/react/guide/server-routes).
 </Warning>
 
 ```ts {{ title: "app/routes/api/uploadthing.ts" }}
-import { createAPIFileRoute } from "@tanstack/start/api";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "../../server/uploadthing";
 
-const handlers = createRouteHandler({ router: uploadRouter });
+const handler = createRouteHandler({ router: uploadRouter });
 
-export const Route = createAPIFileRoute("/api/uploadthing")({
-  GET: handlers,
-  POST: handlers,
+export const Route = createFileRoute("/api/uploadthing")({
+  server: {
+    handlers: {
+      GET: async ({ request }) => {
+        return handler(request);
+      },
+      POST: async ({ request }) => {
+        return handler(request);
+      },
+    },
+  },
 });
 ```
 
@@ -209,7 +218,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { UploadButton } from "../utils/uploadthing";
 
-export const APIRoute = createFileRoute("/")({
+export const Route = createFileRoute("/")({
   component: Home,
 });
 
