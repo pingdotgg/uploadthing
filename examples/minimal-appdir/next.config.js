@@ -5,6 +5,7 @@ const analyze = require("@next/bundle-analyzer")({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
+  turbopack: {},
   typescript: { ignoreBuildErrors: true },
 };
 
