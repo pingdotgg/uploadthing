@@ -1,12 +1,12 @@
 import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: "Tanstack/Start Setup",
-  description: "Learn how to set up a Tanstack/Start project with UploadThing",
+  title: "TanStack Start Setup",
+  description: "Learn how to set up a TanStack Start project with UploadThing",
   category: "Getting Started",
 });
 
-# Getting Started with Tanstack/Start
+# Getting Started with TanStack Start
 
 ## Package Setup
 
@@ -29,9 +29,9 @@ UPLOADTHING_TOKEN=... # A token for interacting with the SDK
 </Warning>
 
 <Note>
-  Tanstack Start is currently in beta, this guide works at the time of writing
-  (`v1.95.0`) but there might be some breaking changes introduced in the
-  framework that we have not kept up to date with.
+  TanStack Start is currently in release candidate (RC). The APIs in this
+  guide match the current v1 RC server-route conventions, but may still change
+  before 1.0.
 </Note>
 
 ## Set Up A FileRouter
@@ -52,7 +52,7 @@ of a FileRoute similar to an endpoint, it has:
 To get full insight into what you can do with the FileRoutes, please refer to
 the [File Router API](/file-routes).
 
-```ts {{ title: "app/server/uploadthing.ts" }}
+```ts {{ title: "src/server/uploadthing.ts" }}
 import { createUploadthing, UploadThingError } from "uploadthing/server";
 import type { FileRouter } from "uploadthing/server";
 
@@ -101,28 +101,38 @@ export type UploadRouter = typeof uploadRouter;
 ### Create an API route using the FileRouter
 
 <Note>
-  File path here doesn't matter, you can serve this from any route. We recommend
-  serving it from `/api/uploadthing`.
+  TanStack Start server routes can live anywhere under `src/routes`, but this
+  guide uses `src/routes/api/uploadthing.ts` so the endpoint is served from
+  `/api/uploadthing`.
 </Note>
 
-<Warning>
-  Make sure to configure API entry handler in `app/api.ts`. For more
-  information, please refer to the [@tanstack/start
-  docs](https://tanstack.com/router/latest/docs/framework/react/start/api-routes#setting-up-the-entry-handler).
-</Warning>
+<Note>
+  TanStack Start server routes now live directly in your `src/routes` tree, so
+  `src/routes/api/uploadthing.ts` automatically serves `/api/uploadthing`. For
+  more information, please refer to the [TanStack Start server-routes
+  docs](https://tanstack.com/start/latest/docs/framework/react/guide/server-routes).
+</Note>
 
-```ts {{ title: "app/routes/api/uploadthing.ts" }}
-import { createAPIFileRoute } from "@tanstack/start/api";
+```ts {{ title: "src/routes/api/uploadthing.ts" }}
+import { createFileRoute } from "@tanstack/react-router";
 
 import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "../../server/uploadthing";
 
-const handlers = createRouteHandler({ router: uploadRouter });
+const handler = createRouteHandler({ router: uploadRouter });
 
-export const Route = createAPIFileRoute("/api/uploadthing")({
-  GET: handlers,
-  POST: handlers,
+export const Route = createFileRoute("/api/uploadthing")({
+  server: {
+    handlers: {
+      GET: async ({ request }) => {
+        return handler(request);
+      },
+      POST: async ({ request }) => {
+        return handler(request);
+      },
+    },
+  },
 });
 ```
 
@@ -135,7 +145,7 @@ We provide components to make uploading easier. We highly recommend re-exporting
 them with the types assigned, but you CAN import the components individually
 from `@uploadthing/react` instead.
 
-```ts {{ title: "app/utils/uploadthing.ts" }}
+```ts {{ title: "src/utils/uploadthing.ts" }}
 import {
   generateReactHelpers,
   generateUploadButton,
@@ -189,7 +199,7 @@ export const { useUploadThing } = generateReactHelpers<UploadRouter>();
     <Tab>
       Include our CSS file in the root layout to make sure the components look right!
 
-      ```tsx {{ title: "app/routes/__root.tsx" }}
+      ```tsx {{ title: "src/routes/__root.tsx" }}
       import uploadthingCss from "@uploadthing/react/styles.css?url";
 
       export const Route = createRootRoute({
@@ -204,12 +214,12 @@ export const { useUploadThing } = generateReactHelpers<UploadRouter>();
 
 ## Mount A Button And Upload!
 
-```tsx {{ title: "app/routes/index.tsx" }}
+```tsx {{ title: "src/routes/index.tsx" }}
 import { createFileRoute } from "@tanstack/react-router";
 
 import { UploadButton } from "../utils/uploadthing";
 
-export const APIRoute = createFileRoute("/")({
+export const Route = createFileRoute("/")({
   component: Home,
 });
 
