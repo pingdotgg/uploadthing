@@ -106,13 +106,6 @@ export type UploadRouter = typeof uploadRouter;
   `/api/uploadthing`.
 </Note>
 
-<Note>
-  TanStack Start server routes now live directly in your `src/routes` tree, so
-  `src/routes/api/uploadthing.ts` automatically serves `/api/uploadthing`. For
-  more information, please refer to the [TanStack Start server-routes
-  docs](https://tanstack.com/start/latest/docs/framework/react/guide/server-routes).
-</Note>
-
 ```ts {{ title: "src/routes/api/uploadthing.ts" }}
 import { createFileRoute } from "@tanstack/react-router";
 
