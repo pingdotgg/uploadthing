@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "workspace:*",
-    "effect": "3.17.7",
+    "effect": "3.20.0",
     "sqids": "^0.3.0"
   },
   "devDependencies": {

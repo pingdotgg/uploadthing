@@ -163,7 +163,7 @@
     "@standard-schema/spec": "1.0.0-beta.4",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "effect": "3.17.7"
+    "effect": "3.20.0"
   },
   "devDependencies": {
     "@effect/vitest": "0.25.1",

@@ -7,7 +7,7 @@
   ],
   "dependencies": {
     "@effect/language-service": "0.35.2",
-    "effect": "3.17.7",
+    "effect": "3.20.0",
     "typescript": "5.8.3"
   }
 }
