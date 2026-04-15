@@ -50,8 +50,7 @@ const cors = HttpMiddleware.make((app) =>
 
 const router = HttpRouter.empty.pipe(
   HttpRouter.get("/api", HttpServerResponse.text("Hello from Effect")),
-  // @ts-expect-error - FIXME!!!
-  HttpRouter.mount("/api/uploadthing", uploadthingRouter),
+  HttpRouter.mountApp("/api/uploadthing", uploadthingRouter),
 );
 
 const app = router.pipe(

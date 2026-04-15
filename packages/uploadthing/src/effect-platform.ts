@@ -1,3 +1,5 @@
+import type * as HttpApp from "@effect/platform/HttpApp";
+import type * as HttpClient from "@effect/platform/HttpClient";
 import * as HttpRouter from "@effect/platform/HttpRouter";
 import * as HttpServerRequest from "@effect/platform/HttpServerRequest";
 import * as Effect from "effect/Effect";
@@ -51,7 +53,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(opts: {
    * ```
    */
   config?: Omit<RouteHandlerConfig, "fetch" | "logLevel">;
-}) => {
+}): HttpApp.Default<unknown, HttpClient.HttpClient> => {
   const router = Effect.runSync(
     createRequestHandler<TRouter>(opts, "effect-platform"),
   );
