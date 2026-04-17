@@ -33,6 +33,8 @@ This repository contains the packages, docs and examples for uploadthing
   Solid projects
 - [uploadthing](https://github.com/pingdotgg/uploadthing/tree/main/packages/uploadthing) -
   server/client stuff (framework agnostic)
+- [Swift Package Manager (SPM) Package](https://github.com/Gold240sx/UploadThing-Swift) -
+  A fully native backend adapter for incorporating uploadthing in your Swift projects.
 
 [Report an Issue](https://github.com/pingdotgg/uploadthing/issues/new)
 
