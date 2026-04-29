@@ -1,10 +1,9 @@
-import { addComponentsDir, addImportsDir, addServerHandler, addTemplate, createResolver, defineNuxtModule, useLogger, useNuxt } from '@nuxt/kit'
+import { addComponent, addComponentsDir, addImports, addImportsDir, addImportsSources, addServerHandler, addTemplate, createResolver, defineNuxtModule, useLogger, useNuxt } from '@nuxt/kit'
 import type { NuxtModule } from '@nuxt/schema'
 import { defu } from 'defu'
 import { existsSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join, resolve } from 'pathe'
-import { createRouteHandler } from 'uploadthing/h3'
 import type { RouteHandlerConfig } from 'uploadthing/types'
 
 const MODULE_NAME = '@uploadthing/nuxt'
@@ -226,12 +225,17 @@ function generateUploadthingArtifacts() {
   const uploadthingOptions = nuxt.options.runtimeConfig.uploadthing as ModuleOptions
   const { fileRouterExport, componentPrefix } = uploadthingOptions
 
-  addTemplate({
+  const requireFromModule = createRequire(import.meta.url)
+  const uploadthingVuePath = requireFromModule.resolve('@uploadthing/vue')
+  const resolvedVuePath = dirname(uploadthingVuePath)
+
+  nuxt.options.alias['#uploadthing-vue'] = resolvedVuePath
+
+  const btnTemplate = addTemplate({
     write: true,
     filename: 'upload-button.ts',
-    dst: resolver.resolve('./runtime/components/upload-button.ts'),
     getContents: () => `
-import { generateUploadButton } from '@uploadthing/vue'
+import { generateUploadButton } from '#uploadthing-vue'
 import type { FileRouter } from 'uploadthing/h3'
 type RouterModule = typeof import('#ut-router')
 type RouterExport = ${JSON.stringify(fileRouterExport)}
@@ -246,12 +250,16 @@ export default RuntimeUploadButton
 `,
   })
 
-  addTemplate({
+  addComponent({
+    name: `${componentPrefix}UploadButton`,
+    filePath: btnTemplate.dst
+  })
+
+  const dropzoneTemplate = addTemplate({
     write: true,
     filename: 'upload-dropzone.ts',
-    dst: resolver.resolve('./runtime/components/upload-dropzone.ts'),
     getContents: () => `
-import { generateUploadDropzone } from '@uploadthing/vue'
+import { generateUploadDropzone } from '#uploadthing-vue'
 import type { FileRouter } from 'uploadthing/h3'
 type RouterModule = typeof import('#ut-router')
 type RouterExport = ${JSON.stringify(fileRouterExport)}
@@ -266,18 +274,16 @@ export default RuntimeUploadDropzone
 `,
   })
 
-  addComponentsDir({
-    path: resolver.resolve('./runtime/components'),
-    prefix: componentPrefix,
-    pathPrefix: false,
+  addComponent({
+    name: `${componentPrefix}UploadDropzone`,
+    filePath: dropzoneTemplate.dst,
   })
 
-  addTemplate({
+  const helpersTemplate = addTemplate({
     write: true,
     filename: 'upload-helpers.ts',
-    dst: resolver.resolve('./runtime/utils/upload-helpers.ts'),
     getContents: () => `
-import { generateVueHelpers } from '@uploadthing/vue'
+import { generateVueHelpers } from '#uploadthing-vue'
 import type { FileRouter } from 'uploadthing/h3'
 type RouterModule = typeof import('#ut-router')
 type RouterExport = ${JSON.stringify(fileRouterExport)}
@@ -297,11 +303,15 @@ export const uploadFiles = helpers.uploadFiles
 `,
   })
 
-  addImportsDir(resolver.resolve('./runtime/utils'))
+  addImports([
+    { name: 'useUploadThing', from: helpersTemplate.dst },
+    { name: 'createUpload', from: helpersTemplate.dst },
+    { name: 'routeRegistry', from: helpersTemplate.dst },
+    { name: 'uploadFiles', from: helpersTemplate.dst },
+  ])
 
   const uploadthingHandlerTemplate = addTemplate({
     write: true,
-    dst: resolver.resolve('./runtime/server/api/uploadthing.ts'),
     filename: 'uploadthing.ts',
     getContents: () => `
 import { useRuntimeConfig } from '#imports'
