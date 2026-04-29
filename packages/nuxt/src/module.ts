@@ -4,9 +4,10 @@ import { defu } from 'defu'
 import { existsSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join, resolve } from 'pathe'
+import { createRouteHandler } from 'uploadthing/h3'
 import type { RouteHandlerConfig } from 'uploadthing/types'
 
-const MODULE_NAME = 'nuxt-uploadthing'
+const MODULE_NAME = '@uploadthing/nuxt'
 const logger = useLogger(MODULE_NAME)
 const resolver = createResolver(import.meta.url)
 
@@ -57,10 +58,9 @@ export interface ModuleOptions {
    */
   routeHandlerConfig?: RouteHandlerConfig
 }
-
 export default defineNuxtModule<ModuleOptions>().with({
   meta: {
-    name: 'nuxt-uploadthing',
+    name: '@uploadthing/nuxt',
     configKey: 'uploadthing',
     compatibility: {
       nuxt: '^4.0.0'
@@ -139,7 +139,7 @@ function applyUploadthingStyles() {
   const useTailwindStyles = uploadthingOptions.useTailwindStyles
 
   if (!useTailwindStyles) {
-    logger.info('[nuxt-uploadthing] Using UploadThing default CSS')
+    logger.info('[@uploadthing/nuxt] Using UploadThing default CSS')
     return registerUploadthingCss()
   }
 
@@ -147,25 +147,25 @@ function applyUploadthingStyles() {
 
   if (!tailwindVersion) {
     logger.warn(
-      '[nuxt-uploadthing] `useTailwindStyles` is enabled, but `tailwindcss` is missing or an unsupported version is installed. Falling back to default UploadThing CSS.',
+      '[@uploadthing/nuxt] `useTailwindStyles` is enabled, but `tailwindcss` is missing or an unsupported version is installed. Falling back to default UploadThing CSS.',
     )
     return registerUploadthingCss()
   }
 
   if (tailwindVersion === '3') {
     logger.warn(
-      '[nuxt-uploadthing] Tailwind CSS v3 detected. To enable UploadThing Tailwind integration, wrap your Tailwind config with `withUt` from "uploadthing/tw". See: https://docs.uploadthing.com/concepts/theming#configuring-tailwind-css.',
+      '[@uploadthing/nuxt] Tailwind CSS v3 detected. To enable UploadThing Tailwind integration, wrap your Tailwind config with `withUt` from "uploadthing/tw". See: https://docs.uploadthing.com/concepts/theming#configuring-tailwind-css.',
     )
     return
   }
 
-  logger.info('[nuxt-uploadthing] Using UploadThing Tailwind CSS integration')
+  logger.info('[@uploadthing/nuxt] Using UploadThing Tailwind CSS integration')
 
   const dist = resolveUploadthingVueDist()
 
   if (!dist) {
     logger.warn(
-      '[nuxt-uploadthing] Could not resolve `@uploadthing/vue/dist` for Tailwind source scanning. Falling back to default UploadThing CSS.',
+      '[@uploadthing/nuxt] Could not resolve `@uploadthing/vue/dist` for Tailwind source scanning. Falling back to default UploadThing CSS.',
     )
     return registerUploadthingCss()
   }
@@ -214,8 +214,6 @@ function resolveUploadthingVueDist(): string | null {
     if (!existsSync(distPath)) {
       return null
     }
-    // const relativeDist = relative(nuxt.options.rootDir, distPath)
-    // return relativeDist
     return distPath
   }
   catch {
@@ -304,7 +302,6 @@ export const uploadFiles = helpers.uploadFiles
   const uploadthingHandlerTemplate = addTemplate({
     write: true,
     dst: resolver.resolve('./runtime/server/api/uploadthing.ts'),
-    // filename: 'nuxt-uploadthing/runtime/server/api/uploadthing.mjsts',
     filename: 'uploadthing.ts',
     getContents: () => `
 import { useRuntimeConfig } from '#imports'
@@ -322,26 +319,30 @@ const emptyStringToUndefined = (obj) => {
   return next
 }
 
+let uploadthingHandler
+
 export default defineEventHandler((event) => {
-  const runtime = useRuntimeConfig()
-  const config = emptyStringToUndefined(runtime.uploadthing?.routeHandlerConfig ?? {})
-  const hasConfig = Object.keys(config).length > 0
+ if (!uploadthingHandler) {
+    const runtime = useRuntimeConfig()
+    const config = emptyStringToUndefined(runtime.uploadthing?.routeHandlerConfig ?? {})
+    const hasConfig = Object.keys(config).length > 0
 
+    const router = RouterModule[ROUTER_EXPORT]
+    if (!router) {
+      throw new Error('[@uploadthing/nuxt] Router export not found: ' + ROUTER_EXPORT)
+    }
 
-  const router = RouterModule[ROUTER_EXPORT]
-  if (!router) {
-    throw new Error('[nuxt-uploadthing] Router export not found: ' + ROUTER_EXPORT)
+    uploadthingHandler = createRouteHandler({
+      router,
+      ...(hasConfig ? { config } : {}),
+    })
   }
 
-  return createRouteHandler({
-    router,
-      ...(hasConfig ? { config } : {}),
-  })(event)
+  return uploadthingHandler(event)
 })
 `,
   })
 
-  // Register generated server handler
   addServerHandler({
     route: '/api/uploadthing',
     handler: uploadthingHandlerTemplate.dst,

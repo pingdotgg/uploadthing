@@ -1,9 +1,10 @@
 # Nuxt UploadThing Module
 
-[![npm version](https://img.shields.io/npm/v/nuxt-uploadthing/latest.svg?style=flat&colorA=020420&colorB=00DC82)](https://npmjs.com/package/nuxt-uploadthing)
-[![npm downloads](https://img.shields.io/npm/dm/nuxt-uploadthing.svg?style=flat&colorA=020420&colorB=00DC82)](https://npm.chart.dev/nuxt-uploadthing)
-[![License](https://img.shields.io/npm/l/nuxt-uploadthing.svg?style=flat&colorA=020420&colorB=00DC82)](https://npmjs.com/package/nuxt-uploadthing)
+[![npm version](https://img.shields.io/npm/v/@uploadthing/nuxt/latest.svg?style=flat&colorA=020420&colorB=00DC82)](https://npmjs.com/package/@uploadthing/nuxt)
+[![npm downloads](https://img.shields.io/npm/dm/@uploadthing/nuxt.svg?style=flat&colorA=020420&colorB=00DC82)](https://npm.chart.dev/@uploadthing/nuxt)
+[![License](https://img.shields.io/npm/l/@uploadthing/nuxt.svg?style=flat&colorA=020420&colorB=00DC82)](https://npmjs.com/package/@uploadthing/nuxt)
 [![Nuxt](https://img.shields.io/badge/Nuxt-020420?logo=nuxt)](https://nuxt.com)
+
 
 Nuxt module for UploadThing with type-safe router integration, generated components, and auto-registered helpers.
 
@@ -22,7 +23,7 @@ Nuxt module for UploadThing with type-safe router integration, generated compone
 ## Installation
 
 ```bash
-pnpm add nuxt-uploadthing uploadthing
+pnpm add @uploadthing/nuxt uploadthing
 ```
 
 ---
@@ -33,12 +34,12 @@ pnpm add nuxt-uploadthing uploadthing
 
 ```ts
 export default defineNuxtConfig({
-  modules: ['nuxt-uploadthing'],
+  modules: ['@uploadthing/nuxt'],
 
   uploadthing: {
     fileRouterPath: '@@/server/uploadthing',
     fileRouterExport: 'fileRouter',
-    componentPrefix: 'UploadThing',
+    componentPrefix: 'Uploadthing',
     useTailwindStyles: false,
   },
 })
@@ -96,7 +97,7 @@ uploadthing: {
 Requirements:
 
 1. `tailwindcss` must be installed in your project.
-2. Import both Tailwind and `nuxt-uploadthing` styles in your main CSS file (for example `assets/css/main.css`):
+2. Import both Tailwind and `@uploadthing/nuxt` styles in your main CSS file (for example `assets/css/main.css`):
 
 ```css
 @import "tailwindcss";
