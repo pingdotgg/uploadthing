@@ -112,7 +112,6 @@ export default defineNuxtModule<ModuleOptions>().with({
 function getTailwindVersion(): '3' | '4' | null {
   try {
     const nuxt = useNuxt()
-    // const _require = createRequire(import.meta.url)
     const _require = createRequire(nuxt.options.rootDir + '/')
     const tailwindPackagePath = _require.resolve('tailwindcss/package.json')
     const tailwindPackage = JSON.parse(readFileSync(tailwindPackagePath, 'utf-8')) as { version?: string }
@@ -203,17 +202,14 @@ function registerUploadthingTailwindCss(distPath: string) {
 
 function resolveUploadthingVueDist(): string | null {
   try {
-    const nuxt = useNuxt()
-    const _require = createRequire(nuxt.options.rootDir + '/')
+    const requireFromModule = createRequire(import.meta.url)
+    const uploadthingVuePath = requireFromModule.resolve('@uploadthing/vue')
+    const resolvedVuePath = dirname(uploadthingVuePath)
 
-    const packageJsonPath = _require.resolve('@uploadthing/vue/package.json')
-
-    const distPath = join(dirname(packageJsonPath), 'dist')
-
-    if (!existsSync(distPath)) {
+    if (!existsSync(resolvedVuePath)) {
       return null
     }
-    return distPath
+    return resolvedVuePath
   }
   catch {
     return null
