@@ -9,7 +9,10 @@ declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
 };
 
-export function NextSSRPlugin(props: { routerConfig: EndpointMetadata }) {
+export function NextSSRPlugin(props: {
+  routerConfig: EndpointMetadata;
+  nonce?: string;
+}) {
   const id = useId();
 
   // Set routerConfig on server globalThis
@@ -22,7 +25,11 @@ export function NextSSRPlugin(props: { routerConfig: EndpointMetadata }) {
     ];
 
     return (
-      <script key={id} dangerouslySetInnerHTML={{ __html: html.join("") }} />
+      <script
+        key={id}
+        nonce={props.nonce}
+        dangerouslySetInnerHTML={{ __html: html.join("") }}
+      />
     );
   });
 
