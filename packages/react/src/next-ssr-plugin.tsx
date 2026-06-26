@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useRef } from "react";
 import { useServerInsertedHTML } from "next/navigation";
 
 import type { EndpointMetadata } from "@uploadthing/shared";
@@ -14,11 +14,15 @@ export function NextSSRPlugin(props: {
   nonce?: string;
 }) {
   const id = useId();
+  const isInserted = useRef(false);
 
   // Set routerConfig on server globalThis
   globalThis.__UPLOADTHING = props.routerConfig;
 
   useServerInsertedHTML(() => {
+    if (isInserted.current) return;
+    isInserted.current = true;
+
     const html = [
       // Hydrate routerConfig on client globalThis
       `globalThis.__UPLOADTHING = ${JSON.stringify(props.routerConfig)};`,
