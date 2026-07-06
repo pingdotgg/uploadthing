@@ -1,4 +1,4 @@
-import * as Micro from "effect/Micro";
+import * as Effect from "effect/Effect";
 
 import { lookup } from "@uploadthing/mime-types";
 
@@ -63,10 +63,10 @@ export function getDefaultRouteConfigValues(
 
 export const fillInputRouteConfig = (
   routeConfig: FileRouterInputConfig,
-): Micro.Micro<ExpandedRouteConfig, InvalidRouteConfigError> => {
+): Effect.Effect<ExpandedRouteConfig, InvalidRouteConfigError> => {
   // If array, apply defaults
   if (isRouteArray(routeConfig)) {
-    return Micro.succeed(
+    return Effect.succeed(
       routeConfig.reduce<ExpandedRouteConfig>((acc, fileType) => {
         acc[fileType] = getDefaultRouteConfigValues(fileType);
         return acc;
@@ -78,13 +78,13 @@ export const fillInputRouteConfig = (
   const newConfig: ExpandedRouteConfig = {};
   for (const key of objectKeys(routeConfig)) {
     const value = routeConfig[key];
-    if (!value) return Micro.fail(new InvalidRouteConfigError(key));
+    if (!value) return Effect.fail(new InvalidRouteConfigError(key));
     newConfig[key] = { ...getDefaultRouteConfigValues(key), ...value };
   }
 
   // we know that the config is valid, so we can stringify it and parse it back
   // this allows us to replace numbers with "safe" equivalents
-  return Micro.succeed(
+  return Effect.succeed(
     JSON.parse(
       JSON.stringify(newConfig, safeNumberReplacer),
     ) as ExpandedRouteConfig,
@@ -98,21 +98,21 @@ export const fillInputRouteConfig = (
 export const matchFileType = (
   file: FileProperties,
   allowedTypes: FileRouterInputKey[],
-): Micro.Micro<
+): Effect.Effect<
   FileRouterInputKey,
   UnknownFileTypeError | InvalidFileTypeError
 > => {
   // Type might be "" if the browser doesn't recognize the mime type
   const mimeType = file.type || lookup(file.name);
   if (!mimeType) {
-    if (allowedTypes.includes("blob")) return Micro.succeed("blob");
-    return Micro.fail(new UnknownFileTypeError(file.name));
+    if (allowedTypes.includes("blob")) return Effect.succeed("blob");
+    return Effect.fail(new UnknownFileTypeError(file.name));
   }
 
   // If the user has specified a specific mime type, use that
   if (allowedTypes.some((type) => type.includes("/"))) {
     if (allowedTypes.includes(mimeType as FileRouterInputKey)) {
-      return Micro.succeed(mimeType as FileRouterInputKey);
+      return Effect.succeed(mimeType as FileRouterInputKey);
     }
   }
 
@@ -126,20 +126,20 @@ export const matchFileType = (
   if (!allowedTypes.includes(type)) {
     // Blob is a catch-all for any file type not explicitly supported
     if (allowedTypes.includes("blob")) {
-      return Micro.succeed("blob");
+      return Effect.succeed("blob");
     } else {
-      return Micro.fail(new InvalidFileTypeError(type, file.name));
+      return Effect.fail(new InvalidFileTypeError(type, file.name));
     }
   }
 
-  return Micro.succeed(type);
+  return Effect.succeed(type);
 };
 
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB", "TB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
 export const fileSizeToBytes = (
   fileSize: FileSize,
-): Micro.Micro<number, InvalidFileSizeError> => {
+): Effect.Effect<number, InvalidFileSizeError> => {
   const regex = new RegExp(
     `^(\\d+)(\\.\\d+)?\\s*(${FILESIZE_UNITS.join("|")})$`,
     "i",
@@ -148,13 +148,13 @@ export const fileSizeToBytes = (
   // make sure the string is in the format of 123KB
   const match = fileSize.match(regex);
   if (!match?.[1] || !match[3]) {
-    return Micro.fail(new InvalidFileSizeError(fileSize));
+    return Effect.fail(new InvalidFileSizeError(fileSize));
   }
 
   const sizeValue = parseFloat(match[1]);
   const sizeUnit = match[3].toUpperCase() as FileSizeUnit;
   const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
-  return Micro.succeed(Math.floor(bytes));
+  return Effect.succeed(Math.floor(bytes));
 };
 
 export const bytesToFileSize = (bytes: number) => {
@@ -241,11 +241,11 @@ export function warnIfInvalidPeerDependency(
 }
 
 export const getRequestUrl = (req: Request) =>
-  Micro.gen(function* () {
+  Effect.gen(function* () {
     const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
     const proto = req.headers.get("x-forwarded-proto") ?? "https";
     const protocol = proto.endsWith(":") ? proto : `${proto}:`;
-    const url = yield* Micro.try({
+    const url = yield* Effect.try({
       try: () => new URL(req.url, `${protocol}//${host}`),
       catch: () => new InvalidURLError(req.url),
     });
@@ -255,15 +255,15 @@ export const getRequestUrl = (req: Request) =>
 
 export const getFullApiUrl = (
   maybeUrl?: string,
-): Micro.Micro<URL, InvalidURLError> =>
-  Micro.gen(function* () {
+): Effect.Effect<URL, InvalidURLError> =>
+  Effect.gen(function* () {
     const base = (() => {
       if (typeof window !== "undefined") return window.location.origin;
       if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
       return "http://localhost:3000";
     })();
 
-    const url = yield* Micro.try({
+    const url = yield* Effect.try({
       try: () => new URL(maybeUrl ?? "/api/uploadthing", base),
       catch: () => new InvalidURLError(maybeUrl ?? "/api/uploadthing"),
     });
@@ -283,7 +283,7 @@ export const getFullApiUrl = (
 export const resolveMaybeUrlArg = (maybeUrl: string | URL | undefined): URL => {
   return maybeUrl instanceof URL
     ? maybeUrl
-    : Micro.runSync(getFullApiUrl(maybeUrl));
+    : Effect.runSync(getFullApiUrl(maybeUrl));
 };
 
 export function parseTimeToSeconds(time: Time) {

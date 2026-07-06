@@ -1,14 +1,13 @@
 import * as Context from "effect/Context";
-import * as Micro from "effect/Micro";
+import * as Effect from "effect/Effect";
 
 import { BadRequestError, FetchError, InvalidJsonError } from "./tagged-errors";
 import type { FetchEsque, ResponseEsque } from "./types";
 
-export class FetchContext
-  extends /** #__PURE__ */ Context.Tag("uploadthing/Fetch")<
-    FetchContext,
-    FetchEsque
-  >() {}
+export class FetchContext extends /** #__PURE__ */ Context.Service<
+  FetchContext,
+  FetchEsque
+>()("uploadthing/Fetch") {}
 
 interface ResponseWithURL extends ResponseEsque {
   requestUrl: string;
@@ -16,12 +15,12 @@ interface ResponseWithURL extends ResponseEsque {
 
 // Temporary Effect wrappers below.
 // Only for use in the browser.
-// On the server, use `@effect/platform.HttpClient` instead.
+// On the server, use `effect/unstable/http.HttpClient` instead.
 export const fetchEff = (
   input: string | URL,
   init?: RequestInit,
-): Micro.Micro<ResponseWithURL, FetchError, FetchContext> =>
-  Micro.flatMap(Micro.service(FetchContext), (fetch) => {
+): Effect.Effect<ResponseWithURL, FetchError, FetchContext> =>
+  Effect.flatMap(FetchContext, (fetch) => {
     const headers = new Headers(init?.headers ?? []);
 
     const reqInfo = {
@@ -31,7 +30,7 @@ export const fetchEff = (
       headers: Object.fromEntries(headers),
     };
 
-    return Micro.tryPromise({
+    return Effect.tryPromise({
       try: (signal) => fetch(input, { ...init, headers, signal }),
       catch: (error) =>
         new FetchError({
@@ -48,23 +47,23 @@ export const fetchEff = (
         }),
     }).pipe(
       // eslint-disable-next-line no-console
-      Micro.tapError((e) => Micro.sync(() => console.error(e.input))),
-      Micro.map((res) => Object.assign(res, { requestUrl: reqInfo.url })),
-      Micro.withTrace("fetch"),
+      Effect.tapError((e) => Effect.sync(() => console.error(e.input))),
+      Effect.map((res) => Object.assign(res, { requestUrl: reqInfo.url })),
+      Effect.withSpan("fetch"),
     );
   });
 
 export const parseResponseJson = (
   res: ResponseWithURL,
-): Micro.Micro<unknown, InvalidJsonError | BadRequestError> =>
-  Micro.tryPromise({
+): Effect.Effect<unknown, InvalidJsonError | BadRequestError> =>
+  Effect.tryPromise({
     try: async () => {
       const json = await res.json();
       return { json, ok: res.ok, status: res.status };
     },
     catch: (error) => new InvalidJsonError({ error, input: res.requestUrl }),
   }).pipe(
-    Micro.filterOrFail(
+    Effect.filterOrFail(
       ({ ok }) => ok,
       ({ json, status }) =>
         new BadRequestError({
@@ -73,6 +72,6 @@ export const parseResponseJson = (
           json,
         }),
     ),
-    Micro.map(({ json }) => json),
-    Micro.withTrace("parseJson"),
+    Effect.map(({ json }) => json),
+    Effect.withSpan("parseJson"),
   );

@@ -35,7 +35,7 @@ export const downloadFile = (
   _url: MaybeUrl | UrlWithOverrides,
 ): Effect.Effect<UTFile, SerializedUploadThingError, HttpClient.HttpClient> =>
   Effect.gen(function* () {
-    let url = Predicate.isRecord(_url) ? _url.url : _url;
+    let url = Predicate.isObject(_url) ? _url.url : _url;
     if (typeof url === "string") {
       // since dataurls will result in name being too long, tell the user
       // to use uploadFiles instead.
@@ -53,7 +53,7 @@ export const downloadFile = (
     const {
       name = url.pathname.split("/").pop() ?? "unknown-filename",
       customId = undefined,
-    } = Predicate.isRecord(_url) ? _url : {};
+    } = Predicate.isObject(_url) ? _url : {};
     const httpClient = (yield* HttpClient.HttpClient).pipe(
       HttpClient.filterStatusOk,
     );

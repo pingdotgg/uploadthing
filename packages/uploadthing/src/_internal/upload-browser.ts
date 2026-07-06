@@ -1,6 +1,6 @@
 import { unsafeCoerce } from "effect/Function";
 import * as Micro from "effect/Micro";
-import { hasProperty, isRecord } from "effect/Predicate";
+import { hasProperty, isObject } from "effect/Predicate";
 
 import type { FetchContext, FetchError } from "@uploadthing/shared";
 import { fetchEff, UploadThingError } from "@uploadthing/shared";
@@ -47,7 +47,7 @@ const uploadWithProgress = (
       previousLoaded = loaded;
     });
     xhr.addEventListener("load", () => {
-      if (xhr.status >= 200 && xhr.status < 300 && isRecord(xhr.response)) {
+      if (xhr.status >= 200 && xhr.status < 300 && isObject(xhr.response)) {
         if (hasProperty(xhr.response, "error")) {
           resume(
             new UploadThingError({
