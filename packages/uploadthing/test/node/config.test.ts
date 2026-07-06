@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
-import * as Layer from "effect/Layer";
+import * as ConfigProvider from "effect/ConfigProvider";
 import * as Redacted from "effect/Redacted";
 import * as S from "effect/Schema";
 import { beforeEach, describe, expect } from "vitest";
@@ -39,7 +39,7 @@ describe("utToken", () => {
   it.effect("fails if no token is provided as env", () =>
     Effect.gen(function* () {
       const token = yield* UTToken.pipe(
-        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.provide(ConfigProvider.layer(configProvider(null))),
         Effect.exit,
       );
 
@@ -61,7 +61,7 @@ describe("utToken", () => {
       process.env.UPLOADTHING_TOKEN = "some-token-that-is-not-a-token";
 
       const token = yield* UTToken.pipe(
-        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.provide(ConfigProvider.layer(configProvider(null))),
         Effect.exit,
       );
 
@@ -80,12 +80,12 @@ describe("utToken", () => {
 
   it.effect("succeeds if token is provided as env", () =>
     Effect.gen(function* () {
-      process.env.UPLOADTHING_TOKEN = yield* S.encode(UploadThingToken)(
+      process.env.UPLOADTHING_TOKEN = yield* S.encodeEffect(UploadThingToken)(
         ParsedToken.make(app1TokenData),
       );
 
       const token = yield* UTToken.pipe(
-        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.provide(ConfigProvider.layer(configProvider(null))),
         Effect.exit,
       );
 
@@ -100,12 +100,12 @@ describe("utToken", () => {
 
   it.effect("with import.meta.env", () =>
     Effect.gen(function* () {
-      import.meta.env.UPLOADTHING_TOKEN = yield* S.encode(UploadThingToken)(
+      import.meta.env.UPLOADTHING_TOKEN = yield* S.encodeEffect(UploadThingToken)(
         ParsedToken.make(app1TokenData),
       );
 
       const token = yield* UTToken.pipe(
-        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.provide(ConfigProvider.layer(configProvider(null))),
         Effect.exit,
       );
 
@@ -124,7 +124,7 @@ describe("utToken", () => {
     Effect.gen(function* () {
       const token = yield* UTToken.pipe(
         Effect.provide(
-          Layer.setConfigProvider(configProvider({ noToken: "here" })),
+          ConfigProvider.layer(configProvider({ noToken: "here" })),
         ),
         Effect.exit,
       );
@@ -148,7 +148,7 @@ describe("utToken", () => {
 
       const token = yield* UTToken.pipe(
         Effect.provide(
-          Layer.setConfigProvider(configProvider({ token: badToken })),
+          ConfigProvider.layer(configProvider({ token: badToken })),
         ),
         Effect.exit,
       );
@@ -168,13 +168,13 @@ describe("utToken", () => {
 
   it.effect("succeeds if token is provided as option", () =>
     Effect.gen(function* () {
-      const testTokenStr = yield* S.encode(UploadThingToken)(
+      const testTokenStr = yield* S.encodeEffect(UploadThingToken)(
         ParsedToken.make(app1TokenData),
       );
 
       const token = yield* UTToken.pipe(
         Effect.provide(
-          Layer.setConfigProvider(configProvider({ token: testTokenStr })),
+          ConfigProvider.layer(configProvider({ token: testTokenStr })),
         ),
         Effect.exit,
       );
@@ -190,7 +190,7 @@ describe("utToken", () => {
 
   it.effect("with ingestHost specified", () =>
     Effect.gen(function* () {
-      const testTokenStr = yield* S.encode(UploadThingToken)(
+      const testTokenStr = yield* S.encodeEffect(UploadThingToken)(
         ParsedToken.make({
           ...app1TokenData,
           ingestHost: "ingest.ut-staging.com",
@@ -199,7 +199,7 @@ describe("utToken", () => {
 
       const token = yield* UTToken.pipe(
         Effect.provide(
-          Layer.setConfigProvider(configProvider({ token: testTokenStr })),
+          ConfigProvider.layer(configProvider({ token: testTokenStr })),
         ),
         Effect.exit,
       );
@@ -215,17 +215,17 @@ describe("utToken", () => {
 
   it.effect("options take precedence over env", () =>
     Effect.gen(function* () {
-      process.env.UPLOADTHING_TOKEN = yield* S.encode(UploadThingToken)(
+      process.env.UPLOADTHING_TOKEN = yield* S.encodeEffect(UploadThingToken)(
         ParsedToken.make(app1TokenData),
       );
 
-      const token2Str = yield* S.encode(UploadThingToken)(
+      const token2Str = yield* S.encodeEffect(UploadThingToken)(
         ParsedToken.make(app2TokenData),
       );
 
       const token = yield* UTToken.pipe(
         Effect.provide(
-          Layer.setConfigProvider(configProvider({ token: token2Str })),
+          ConfigProvider.layer(configProvider({ token: token2Str })),
         ),
         Effect.exit,
       );
@@ -243,13 +243,13 @@ describe("utToken", () => {
 describe("ingest url infers correctly", () => {
   it.effect("takes from env if provided", () =>
     Effect.gen(function* () {
-      process.env.UPLOADTHING_TOKEN = yield* S.encode(UploadThingToken)(
+      process.env.UPLOADTHING_TOKEN = yield* S.encodeEffect(UploadThingToken)(
         ParsedToken.make(app1TokenData),
       );
       process.env.UPLOADTHING_INGEST_URL = "http://localhost:1234";
 
       const url = yield* IngestUrl(undefined).pipe(
-        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.provide(ConfigProvider.layer(configProvider(null))),
         Effect.exit,
       );
 
@@ -259,12 +259,12 @@ describe("ingest url infers correctly", () => {
 
   it.effect("infers from token region if no env is provided", () =>
     Effect.gen(function* () {
-      process.env.UPLOADTHING_TOKEN = yield* S.encode(UploadThingToken)(
+      process.env.UPLOADTHING_TOKEN = yield* S.encodeEffect(UploadThingToken)(
         ParsedToken.make(app1TokenData),
       );
 
       const url = yield* IngestUrl(undefined).pipe(
-        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.provide(ConfigProvider.layer(configProvider(null))),
         Effect.exit,
       );
 
@@ -277,7 +277,7 @@ describe("IsDevelopment", () => {
   it.effect("defaults to false", () =>
     Effect.gen(function* () {
       const isDev = yield* IsDevelopment.pipe(
-        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.provide(ConfigProvider.layer(configProvider(null))),
         Effect.exit,
       );
 
@@ -291,7 +291,7 @@ describe("IsDevelopment", () => {
       process.env.NODE_ENV = "development";
 
       const isDev = yield* IsDevelopment.pipe(
-        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.provide(ConfigProvider.layer(configProvider(null))),
         Effect.exit,
       );
 
@@ -304,7 +304,7 @@ describe("IsDevelopment", () => {
       process.env.UPLOADTHING_IS_DEV = "true";
 
       const isDev = yield* IsDevelopment.pipe(
-        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.provide(ConfigProvider.layer(configProvider(null))),
         Effect.exit,
       );
 
@@ -316,7 +316,7 @@ describe("IsDevelopment", () => {
     Effect.gen(function* () {
       const isDev = yield* IsDevelopment.pipe(
         Effect.provide(
-          Layer.setConfigProvider(configProvider({ isDev: true })),
+          ConfigProvider.layer(configProvider({ isDev: true })),
         ),
         Effect.exit,
       );

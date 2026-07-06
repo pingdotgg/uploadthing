@@ -1,6 +1,7 @@
 import * as Arr from "effect/Array";
+import * as Data from "effect/Data";
+import * as Effect from "effect/Effect";
 import type { LazyArg } from "effect/Function";
-import * as Micro from "effect/Micro";
 import * as Predicate from "effect/Predicate";
 
 import { fetchEff } from "@uploadthing/shared";
@@ -26,7 +27,7 @@ import { createUTReporter } from "./ut-reporter";
  * Error indicating the XHR request failed
  * @public
  */
-export class XHRError extends Micro.TaggedError("XHRError")<{
+export class XHRError extends Data.TaggedError("XHRError")<{
   message: string;
   xhr: unknown;
 }> {}
@@ -41,7 +42,7 @@ export type NetworkError = XHRError | FetchError;
  * Error indicating the upload was rejected during upload to the storage provider
  * @public
  */
-export class UTStorageError extends Micro.TaggedError("UTStorageError")<{
+export class UTStorageError extends Data.TaggedError("UTStorageError")<{
   message: string;
   response: unknown;
 }> {}
@@ -50,7 +51,7 @@ export class UTStorageError extends Micro.TaggedError("UTStorageError")<{
  * Error indicating the request to your UploadThing server failed
  * @public
  */
-export class UTServerError<TErrorShape> extends Micro.TaggedError(
+export class UTServerError<TErrorShape> extends Data.TaggedError(
   "UTServerError",
 )<{
   message: string;
@@ -393,21 +394,23 @@ export interface UploadFileOptions<TRoute extends AnyFileRoute> {
 export function uploadFile<TRoute extends AnyFileRoute>(
   url: string,
   { file, files, XHRImpl, ...options }: UploadFileOptions<TRoute>,
-): Micro.Micro<UploadedFile<TRoute> | FailedFile<TRoute>, never, FetchContext> {
+): Effect.Effect<UploadedFile<TRoute> | FailedFile<TRoute>, never, FetchContext> {
   return fetchEff(url, { method: "HEAD", headers: options.traceHeaders }).pipe(
-    Micro.map(({ headers }) =>
+    Effect.map(({ headers }) =>
       Number.parseInt(headers.get("x-ut-range-start") ?? "0"),
     ),
-    Micro.map((rangeStart) => transitionToUploading(file, rangeStart)),
-    Micro.tap((uploadingFile) => {
-      options.onEvent({
-        type: "upload-started",
-        file: uploadingFile,
-        files,
-      });
-    }),
-    Micro.flatMap((uploadingFile) =>
-      Micro.async<UploadedFile<TRoute>, XHRError | UTStorageError>((resume) => {
+    Effect.map((rangeStart) => transitionToUploading(file, rangeStart)),
+    Effect.tap((uploadingFile) =>
+      Effect.sync(() => {
+        options.onEvent({
+          type: "upload-started",
+          file: uploadingFile,
+          files,
+        });
+      }),
+    ),
+    Effect.flatMap((uploadingFile) =>
+      Effect.callback<UploadedFile<TRoute>, XHRError | UTStorageError>((resume) => {
         const xhr = new XHRImpl();
         xhr.open("PUT", url, true);
 
@@ -448,7 +451,7 @@ export function uploadFile<TRoute extends AnyFileRoute>(
               file: uploadedFile,
               files,
             });
-            resume(Micro.succeed(uploadedFile));
+            resume(Effect.succeed(uploadedFile));
           }
         });
         xhr.addEventListener("error", () => {
@@ -488,17 +491,17 @@ export function uploadFile<TRoute extends AnyFileRoute>(
         }
         xhr.send(formData);
 
-        return Micro.sync(() => xhr.abort());
+        return Effect.sync(() => xhr.abort());
       }),
     ),
-    Micro.catchAll((error) => {
+    Effect.catch((error) => {
       const failedFile = transitionToFailed<TRoute>(file, error);
       options.onEvent({
         type: "upload-failed",
         file: failedFile,
         files,
       });
-      return Micro.succeed(failedFile);
+      return Effect.succeed(failedFile);
     }),
   );
 }
@@ -550,7 +553,7 @@ export function requestPresignedUrls<
   TEndpoint extends keyof TRouter,
 >(
   options: RequestPresignedUrlsOptions<TRouter, TEndpoint>,
-): Micro.Micro<
+): Effect.Effect<
   ReadonlyArray<NewPresignedUrl>,
   UTServerError<TRouter[TEndpoint]["$types"]["errorShape"]>,
   FetchContext
@@ -572,7 +575,7 @@ export function requestPresignedUrls<
       lastModified: f.lastModified,
     })),
   }).pipe(
-    Micro.mapError(
+    Effect.mapError(
       (error) =>
         new UTServerError({
           message: error.message,
@@ -612,19 +615,21 @@ export function uploadFiles<
     package: options.package,
     traceHeaders,
   }).pipe(
-    Micro.map(Arr.zip(pendingFiles)),
-    Micro.tap((pairs) => {
-      for (const [presigned, file] of pairs) {
-        file.key = presigned.key;
-        file.customId = presigned.customId;
-      }
-      options.onEvent({
-        type: "presigned-received",
-        files: pendingFiles,
-      });
-    }),
-    Micro.flatMap((pairs) =>
-      Micro.forEach(
+    Effect.map(Arr.zip(pendingFiles)),
+    Effect.tap((pairs) =>
+      Effect.sync(() => {
+        for (const [presigned, file] of pairs) {
+          file.key = presigned.key;
+          file.customId = presigned.customId;
+        }
+        options.onEvent({
+          type: "presigned-received",
+          files: pendingFiles,
+        });
+      }),
+    ),
+    Effect.flatMap((pairs) =>
+      Effect.forEach(
         pairs,
         ([presigned, file]) =>
           uploadFile(presigned.url, {

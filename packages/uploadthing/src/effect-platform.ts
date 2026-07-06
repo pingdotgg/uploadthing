@@ -1,9 +1,9 @@
-import type * as HttpApp from "@effect/platform/HttpApp";
-import type * as HttpClient from "@effect/platform/HttpClient";
-import * as HttpRouter from "@effect/platform/HttpRouter";
-import * as HttpServerRequest from "@effect/platform/HttpServerRequest";
+import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
-import * as Layer from "effect/Layer";
+import type * as Scope from "effect/Scope";
+import type * as HttpClient from "effect/unstable/http/HttpClient";
+import * as HttpServerRequest from "effect/unstable/http/HttpServerRequest";
+import type * as HttpServerResponse from "effect/unstable/http/HttpServerResponse";
 
 import type { Json } from "@uploadthing/shared";
 
@@ -39,34 +39,40 @@ export const createRouteHandler = <TRouter extends FileRouter>(opts: {
    *
    * @example
    * ```ts
-   * import { Effect, Layer, Logger, LogLevel } from "effect";
-   * import { HttpClient } from "@effect/platform";
+   * import { Effect, Layer, References } from "effect";
+   * import { FetchHttpClient } from "effect/unstable/http";
 
    * // Set logLevel
-   * Logger.withMinimumLogLevel(LogLevel.Debug)
+   * Layer.succeed(References.MinimumLogLevel, "Debug")
    *   
    * // Override fetch implementation
    * Layer.succeed(
-   *   HttpClient.Fetch,
+   *   FetchHttpClient.Fetch,
    *   myFetchImplementation,
    * );
    * ```
    */
   config?: Omit<RouteHandlerConfig, "fetch" | "logLevel">;
-}): HttpApp.Default<unknown, HttpClient.HttpClient> => {
-  const router = Effect.runSync(
+}): Effect.Effect<
+  HttpServerResponse.HttpServerResponse,
+  unknown,
+  HttpClient.HttpClient | HttpServerRequest.HttpServerRequest | Scope.Scope
+> => {
+  const handler = Effect.runSync(
     createRequestHandler<TRouter>(opts, "effect-platform"),
   );
 
-  return HttpRouter.provideServiceEffect(
-    router,
-    AdapterArguments,
-    Effect.map(
-      HttpServerRequest.HttpServerRequest,
-      (serverRequest) =>
-        ({
-          req: serverRequest,
-        }) satisfies AdapterArgs,
+  return handler.pipe(
+    Effect.provideServiceEffect(
+      AdapterArguments,
+      Effect.map(
+        HttpServerRequest.HttpServerRequest,
+        (serverRequest) =>
+          ({
+            req: serverRequest,
+          }) satisfies AdapterArgs,
+      ),
     ),
-  ).pipe(Effect.provide(Layer.setConfigProvider(configProvider(opts.config))));
+    Effect.provide(ConfigProvider.layer(configProvider(opts.config))),
+  );
 };

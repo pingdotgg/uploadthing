@@ -1,5 +1,5 @@
-import * as HttpClient from "@effect/platform/HttpClient";
-import * as HttpClientRequest from "@effect/platform/HttpClientRequest";
+import * as HttpClient from "effect/unstable/http/HttpClient";
+import * as HttpClientRequest from "effect/unstable/http/HttpClientRequest";
 import * as Effect from "effect/Effect";
 import * as Predicate from "effect/Predicate";
 
@@ -69,7 +69,6 @@ export const downloadFile = (
           data: cause.toJSON() as Json,
         } satisfies SerializedUploadThingError;
       }),
-      Effect.scoped,
     );
 
     return new UTFile([arrayBuffer], name, {
@@ -135,7 +134,7 @@ export const uploadFile = (
       Effect.catchTag("UploadThingError", (e) =>
         Effect.fail(UploadThingError.toObject(e)),
       ),
-      Effect.catchTag("ResponseError", (e) =>
+      Effect.catchTag("HttpClientError", (e) =>
         Effect.fail({
           code: "UPLOAD_FAILED",
           message: "Failed to upload file",

@@ -1,5 +1,6 @@
 import * as Arr from "effect/Array";
-import * as Micro from "effect/Micro";
+import * as Cause from "effect/Cause";
+import * as Effect from "effect/Effect";
 
 import type { ExpandedRouteConfig, FetchEsque } from "@uploadthing/shared";
 import {
@@ -59,10 +60,10 @@ export const isValidFileType = (
   file: File,
   routeConfig: ExpandedRouteConfig,
 ): boolean =>
-  Micro.runSync(
+  Effect.runSync(
     matchFileType(file, objectKeys(routeConfig)).pipe(
-      Micro.map((type) => file.type.includes(type)),
-      Micro.orElseSucceed(() => false),
+      Effect.map((type) => file.type.includes(type)),
+      Effect.orElseSucceed(() => false),
     ),
   );
 
@@ -74,11 +75,11 @@ export const isValidFileSize = (
   file: File,
   routeConfig: ExpandedRouteConfig,
 ): boolean =>
-  Micro.runSync(
+  Effect.runSync(
     matchFileType(file, objectKeys(routeConfig)).pipe(
-      Micro.flatMap((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
-      Micro.map((maxFileSize) => file.size <= maxFileSize),
-      Micro.orElseSucceed(() => false),
+      Effect.flatMap((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
+      Effect.map((maxFileSize) => file.size <= maxFileSize),
+      Effect.orElseSucceed(() => false),
     ),
   );
 
@@ -121,7 +122,7 @@ export const genUploader = <TRouter extends FileRouter>(
     });
     const fetchFn: FetchEsque = initOpts?.fetch ?? window.fetch;
 
-    const presigneds = await Micro.runPromise(
+    const presigneds = await Effect.runPromise(
       utReporter("upload", {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         input: "input" in opts ? (opts.input as any) : null,
@@ -131,7 +132,7 @@ export const genUploader = <TRouter extends FileRouter>(
           type: f.type,
           lastModified: f.lastModified,
         })),
-      }).pipe(Micro.provideService(FetchContext, fetchFn)),
+      }).pipe(Effect.provideService(FetchContext, fetchFn)),
     );
 
     const totalSize = opts.files.reduce((acc, f) => acc + f.size, 0);
@@ -150,7 +151,7 @@ export const genUploader = <TRouter extends FileRouter>(
             totalProgress: Math.round((totalLoaded / totalSize) * 100),
           });
         },
-      }).pipe(Micro.provideService(FetchContext, fetchFn));
+      }).pipe(Effect.provideService(FetchContext, fetchFn));
 
     for (const [i, p] of presigneds.entries()) {
       const file = opts.files[i];
@@ -159,16 +160,16 @@ export const genUploader = <TRouter extends FileRouter>(
       const deferred = createDeferred<ClientUploadedFileData<TServerOutput>>();
       uploads.set(file, { deferred, presigned: p });
 
-      void Micro.runPromiseExit(uploadEffect(file, p), {
+      void Effect.runPromiseExit(uploadEffect(file, p), {
         signal: deferred.ac.signal,
       })
         .then((result) => {
           if (result._tag === "Success") {
             return deferred.resolve(result.value);
-          } else if (result.cause._tag === "Interrupt") {
+          } else if (Cause.hasInterrupts(result.cause)) {
             throw new UploadPausedError();
           }
-          throw Micro.causeSquash(result.cause);
+          throw Cause.squash(result.cause);
         })
         .catch((err) => {
           if (err instanceof UploadPausedError) return;
@@ -206,16 +207,16 @@ export const genUploader = <TRouter extends FileRouter>(
         if (!upload) throw "No upload found";
 
         upload.deferred.ac = new AbortController();
-        void Micro.runPromiseExit(uploadEffect(file, upload.presigned), {
+        void Effect.runPromiseExit(uploadEffect(file, upload.presigned), {
           signal: upload.deferred.ac.signal,
         })
           .then((result) => {
             if (result._tag === "Success") {
               return upload.deferred.resolve(result.value);
-            } else if (result.cause._tag === "Interrupt") {
+            } else if (Cause.hasInterrupts(result.cause)) {
               throw new UploadPausedError();
             }
-            throw Micro.causeSquash(result.cause);
+            throw Cause.squash(result.cause);
           })
           .catch((err) => {
             if (err instanceof UploadPausedError) return;
@@ -274,16 +275,16 @@ export const genUploader = <TRouter extends FileRouter>(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
     })
-      .pipe(Micro.provideService(FetchContext, fetchFn), (effect) =>
-        Micro.runPromiseExit(effect, opts.signal && { signal: opts.signal }),
+      .pipe(Effect.provideService(FetchContext, fetchFn), (effect) =>
+        Effect.runPromiseExit(effect, opts.signal && { signal: opts.signal }),
       )
       .then((exit) => {
         if (exit._tag === "Success") {
           return exit.value;
-        } else if (exit.cause._tag === "Interrupt") {
+        } else if (Cause.hasInterrupts(exit.cause)) {
           throw new UploadAbortedError();
         }
-        throw Micro.causeSquash(exit.cause);
+        throw Cause.squash(exit.cause);
       });
   };
 

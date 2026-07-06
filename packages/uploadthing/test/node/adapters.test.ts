@@ -1,12 +1,11 @@
 /* eslint-disable no-restricted-globals */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest } from "next/server";
-import * as FetchHttpClient from "@effect/platform/FetchHttpClient";
-import * as HttpServerRequest from "@effect/platform/HttpServerRequest";
-import * as HttpServerResponse from "@effect/platform/HttpServerResponse";
+import * as FetchHttpClient from "effect/unstable/http/FetchHttpClient";
+import * as HttpServerRequest from "effect/unstable/http/HttpServerRequest";
+import * as HttpServerResponse from "effect/unstable/http/HttpServerResponse";
 import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
-import * as Layer from "effect/Layer";
 import * as express from "express";
 import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
@@ -925,8 +924,8 @@ describe("adapters:effect-platform", async () => {
       expect(response.status).toBe(200);
     }).pipe(
       Effect.provide(
-        Layer.setConfigProvider(
-          ConfigProvider.fromJson({
+        ConfigProvider.layer(
+          ConfigProvider.fromUnknown({
             uploadthingToken: testToken.encoded,
           }),
         ),

@@ -113,7 +113,7 @@ describe("errors for invalid request input", () => {
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       message: "Invalid input",
-      cause: expect.stringContaining('Expected "upload", actual "invalid"'),
+      cause: expect.stringContaining('Expected "upload" | undefined, got "invalid"'),
     });
   });
 });

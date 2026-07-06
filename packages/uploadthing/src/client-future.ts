@@ -1,5 +1,6 @@
 import * as Arr from "effect/Array";
-import * as Micro from "effect/Micro";
+import * as Cause from "effect/Cause";
+import * as Effect from "effect/Effect";
 
 import type { FetchEsque } from "@uploadthing/shared";
 import {
@@ -83,13 +84,13 @@ export const future_genUploader = <TRouter extends FileRouter>(
       input: (options as any).input as inferEndpointInput<TRouter[TEndpoint]>,
       headers: options.headers,
       traceHeaders,
-    }).pipe(Micro.provideService(FetchContext, fetchFn), (effect) =>
-      Micro.runPromiseExit(
+    }).pipe(Effect.provideService(FetchContext, fetchFn), (effect) =>
+      Effect.runPromiseExit(
         effect,
         options.signal && { signal: options.signal },
       ),
     );
-    if (pExit._tag === "Failure") throw Micro.causeSquash(pExit.cause);
+    if (pExit._tag === "Failure") throw Cause.squash(pExit.cause);
     const presigneds = pExit.value;
     const pendingFiles = options.files.map(makePendingFile);
 
@@ -114,7 +115,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
         onEvent: options.onEvent,
         traceHeaders,
         XHRImpl: globalThis.XMLHttpRequest,
-      }).pipe(Micro.provideService(FetchContext, fetchFn));
+      }).pipe(Effect.provideService(FetchContext, fetchFn));
 
     for (const [presigned, file] of Arr.zip(presigneds, pendingFiles)) {
       file.key = presigned.key;
@@ -123,16 +124,16 @@ export const future_genUploader = <TRouter extends FileRouter>(
       const deferred = createDeferred<AnyFile<TRouter[TEndpoint]>>();
       uploads.set(file, { presigned, deferred });
 
-      void Micro.runPromiseExit(uploadEffect(file, presigned), {
+      void Effect.runPromiseExit(uploadEffect(file, presigned), {
         signal: deferred.ac.signal,
       })
         .then((result) => {
           if (result._tag === "Success") {
             return deferred.resolve(result.value);
-          } else if (result.cause._tag === "Interrupt") {
+          } else if (Cause.hasInterrupts(result.cause)) {
             throw new UploadPausedError();
           }
-          throw Micro.causeSquash(result.cause);
+          throw Cause.squash(result.cause);
         })
         .catch((err) => {
           if (err instanceof UploadPausedError) return;
@@ -201,7 +202,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
         if (!upload) throw "No upload found";
 
         upload.deferred.ac = new AbortController();
-        void Micro.runPromiseExit(
+        void Effect.runPromiseExit(
           uploadEffect(file as PendingFile, upload.presigned),
           {
             signal: upload.deferred.ac.signal,
@@ -210,10 +211,10 @@ export const future_genUploader = <TRouter extends FileRouter>(
           .then((result) => {
             if (result._tag === "Success") {
               return upload.deferred.resolve(result.value);
-            } else if (result.cause._tag === "Interrupt") {
+            } else if (Cause.hasInterrupts(result.cause)) {
               throw new UploadPausedError();
             }
-            throw Micro.causeSquash(result.cause);
+            throw Cause.squash(result.cause);
           })
           .catch((err) => {
             if (err instanceof UploadPausedError) return;

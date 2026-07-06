@@ -1,15 +1,12 @@
-import type * as FetchHttpClient from "@effect/platform/FetchHttpClient";
-import * as HttpClient from "@effect/platform/HttpClient";
-import type * as HttpClientError from "@effect/platform/HttpClientError";
-import * as HttpClientRequest from "@effect/platform/HttpClientRequest";
-import * as HttpClientResponse from "@effect/platform/HttpClientResponse";
 import * as Arr from "effect/Array";
 import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
-import type { ManagedRuntime } from "effect/ManagedRuntime";
-import type { ParseError } from "effect/ParseResult";
 import * as Redacted from "effect/Redacted";
 import * as S from "effect/Schema";
+import * as HttpClient from "effect/unstable/http/HttpClient";
+import type * as HttpClientError from "effect/unstable/http/HttpClientError";
+import * as HttpClientRequest from "effect/unstable/http/HttpClientRequest";
+import * as HttpClientResponse from "effect/unstable/http/HttpClientResponse";
 
 import type { ACL, FetchEsque, MaybeUrl } from "@uploadthing/shared";
 import {
@@ -48,10 +45,7 @@ export { UTFile };
 export class UTApi {
   private fetch: FetchEsque;
   private defaultKeyType: "fileKey" | "customId";
-  private runtime: ManagedRuntime<
-    HttpClient.HttpClient | FetchHttpClient.Fetch,
-    UploadThingError
-  >;
+  private runtime: ReturnType<typeof makeRuntime>;
   private opts: UTApiOptions;
   constructor(options?: UTApiOptions) {
     // Assert some stuff
@@ -65,9 +59,9 @@ export class UTApi {
   private requestUploadThing = <T>(
     pathname: `/${string}`,
     body: Record<string, unknown>,
-    responseSchema: S.Schema<T, any>,
+    responseSchema: S.Codec<T, any>,
   ) =>
-    Effect.gen(this, function* () {
+    Effect.gen(function* () {
       const { apiKey } = yield* UTToken;
       const baseUrl = yield* ApiUrl;
       const httpClient = (yield* HttpClient.HttpClient).pipe(
@@ -76,19 +70,18 @@ export class UTApi {
 
       return yield* HttpClientRequest.post(pathname).pipe(
         HttpClientRequest.prependUrl(baseUrl),
-        HttpClientRequest.bodyUnsafeJson(body),
+        HttpClientRequest.bodyJsonUnsafe(body),
         HttpClientRequest.setHeaders({
           "x-uploadthing-version": UPLOADTHING_VERSION,
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-api-key": Redacted.value(apiKey),
         }),
         httpClient.execute,
-        Effect.tapBoth({
-          onSuccess: logHttpClientResponse("UploadThing API Response"),
-          onFailure: logHttpClientError("Failed to request UploadThing API"),
-        }),
+        Effect.tap(logHttpClientResponse("UploadThing API Response")),
+        Effect.tapError(
+          logHttpClientError("Failed to request UploadThing API"),
+        ),
         Effect.flatMap(HttpClientResponse.schemaBodyJson(responseSchema)),
-        Effect.scoped,
       );
     }).pipe(
       Effect.catchTag(
@@ -107,7 +100,7 @@ export class UTApi {
   private executeAsync = async <A>(
     program: Effect.Effect<
       A,
-      UploadThingError | ParseError | HttpClientError.HttpClientError,
+      UploadThingError | S.SchemaError | HttpClientError.HttpClientError,
       HttpClient.HttpClient
     >,
     signal?: AbortSignal,
@@ -350,12 +343,12 @@ export class UTApi {
           key: S.String,
           name: S.String,
           size: S.Number,
-          status: S.Literal(
+          status: S.Literals([
             "Deletion Pending",
             "Failed",
             "Uploaded",
             "Uploading",
-          ),
+          ]),
           uploadedAt: S.Number,
         }),
       ),
