@@ -33,6 +33,7 @@ export const baseConfig = defineConfig({
   test: {
     silent: "passed-only",
     mockReset: true,
+    setupFiles: [new URL("./setup-effect.js", import.meta.url).pathname],
     coverage: {
       provider: "istanbul",
       reporter: [

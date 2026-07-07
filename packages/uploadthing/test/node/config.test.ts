@@ -1,7 +1,7 @@
 import { it } from "@effect/vitest";
+import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
-import * as ConfigProvider from "effect/ConfigProvider";
 import * as Redacted from "effect/Redacted";
 import * as S from "effect/Schema";
 import { beforeEach, describe, expect } from "vitest";
@@ -100,9 +100,9 @@ describe("utToken", () => {
 
   it.effect("with import.meta.env", () =>
     Effect.gen(function* () {
-      import.meta.env.UPLOADTHING_TOKEN = yield* S.encodeEffect(UploadThingToken)(
-        ParsedToken.make(app1TokenData),
-      );
+      import.meta.env.UPLOADTHING_TOKEN = yield* S.encodeEffect(
+        UploadThingToken,
+      )(ParsedToken.make(app1TokenData));
 
       const token = yield* UTToken.pipe(
         Effect.provide(ConfigProvider.layer(configProvider(null))),
@@ -315,9 +315,7 @@ describe("IsDevelopment", () => {
   it.effect("is true if config set", () =>
     Effect.gen(function* () {
       const isDev = yield* IsDevelopment.pipe(
-        Effect.provide(
-          ConfigProvider.layer(configProvider({ isDev: true })),
-        ),
+        Effect.provide(ConfigProvider.layer(configProvider({ isDev: true }))),
         Effect.exit,
       );
 

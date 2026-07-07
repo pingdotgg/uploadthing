@@ -1,7 +1,7 @@
-import * as HttpClient from "effect/unstable/http/HttpClient";
-import * as HttpClientRequest from "effect/unstable/http/HttpClientRequest";
 import * as Effect from "effect/Effect";
 import * as Predicate from "effect/Predicate";
+import * as HttpClient from "effect/unstable/http/HttpClient";
+import * as HttpClientRequest from "effect/unstable/http/HttpClientRequest";
 
 import {
   generateKey,

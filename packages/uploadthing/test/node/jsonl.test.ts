@@ -53,7 +53,9 @@ describe("handleJsonLineStreaming", () => {
         const exit = yield* handleJsonLineStream(
           MetadataFetchStreamPart,
           onChunk,
-        )(Stream.fromReadableStream({ evaluate: () => readable, onError })).pipe(Effect.exit);
+        )(
+          Stream.fromReadableStream({ evaluate: () => readable, onError }),
+        ).pipe(Effect.exit);
 
         expect(exit).toEqual(Exit.succeed(undefined));
 
@@ -80,7 +82,9 @@ describe("handleJsonLineStreaming", () => {
       const exit = yield* handleJsonLineStream(
         MetadataFetchStreamPart,
         onChunk,
-      )(Stream.fromReadableStream({ evaluate: () => stream, onError })).pipe(Effect.exit);
+      )(Stream.fromReadableStream({ evaluate: () => stream, onError })).pipe(
+        Effect.exit,
+      );
 
       expect(exit).toEqual(Exit.succeed(undefined));
 
@@ -117,7 +121,9 @@ describe("handleJsonLineStreaming", () => {
         const exit = yield* handleJsonLineStream(
           MetadataFetchStreamPart,
           onChunk,
-        )(Stream.fromReadableStream({ evaluate: () => stream, onError })).pipe(Effect.exit);
+        )(Stream.fromReadableStream({ evaluate: () => stream, onError })).pipe(
+          Effect.exit,
+        );
 
         expect(exit).toEqual(Exit.succeed(undefined));
 
@@ -155,7 +161,9 @@ describe("handleJsonLineStreaming", () => {
       const exit = yield* handleJsonLineStream(
         MetadataFetchStreamPart,
         onChunk,
-      )(Stream.fromReadableStream({ evaluate: () => stream, onError })).pipe(Effect.exit);
+      )(Stream.fromReadableStream({ evaluate: () => stream, onError })).pipe(
+        Effect.exit,
+      );
 
       expect(exit).toEqual(Exit.succeed(undefined));
 
@@ -187,7 +195,9 @@ describe("handleJsonLineStreaming", () => {
       const exit = yield* handleJsonLineStream(
         MetadataFetchStreamPart,
         onChunk,
-      )(Stream.fromReadableStream({ evaluate: () => stream, onError })).pipe(Effect.exit);
+      )(Stream.fromReadableStream({ evaluate: () => stream, onError })).pipe(
+        Effect.exit,
+      );
 
       expect(exit).toEqual(Exit.succeed(undefined));
 

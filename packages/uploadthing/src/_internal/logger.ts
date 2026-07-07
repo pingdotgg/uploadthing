@@ -77,10 +77,8 @@ export const logHttpClientResponse = (
   const level = opts?.level ?? "Debug";
 
   return (response: HttpClientResponse.HttpClientResponse) => {
-    const consumeBody: Effect.Effect<
-      unknown,
-      HttpClientError.HttpClientError
-    > = mixin !== "None" ? response[mixin] : Effect.void;
+    const consumeBody: Effect.Effect<unknown, HttpClientError.HttpClientError> =
+      mixin !== "None" ? response[mixin] : Effect.void;
 
     return Effect.flatMap(consumeBody, () =>
       Effect.logWithLevel(level)(`${message} (${response.status})`).pipe(

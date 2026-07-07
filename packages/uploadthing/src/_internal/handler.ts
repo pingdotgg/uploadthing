@@ -60,7 +60,10 @@ const ignoreLogged = <A, E, R>(
 ): Effect.Effect<void, never, R> =>
   effect.pipe(
     Effect.catchCause((cause) =>
-      Effect.logDebug("An error was silently ignored because it is not anticipated to be useful", cause),
+      Effect.logDebug(
+        "An error was silently ignored because it is not anticipated to be useful",
+        cause,
+      ),
     ),
     Effect.asVoid,
   );
@@ -187,7 +190,7 @@ export const createRequestHandler = <TRouter extends FileRouter>(
         });
       }
 
-      const { body, fiber } = yield* (actionType === "upload" &&
+      const { body, fiber } = yield* actionType === "upload" &&
       uploadthingHook === undefined
         ? handleUploadAction({
             uploadable,
@@ -199,7 +202,7 @@ export const createRequestHandler = <TRouter extends FileRouter>(
           ? handleCallbackRequest({ uploadable, fePackage, beAdapter })
           : actionType === undefined && uploadthingHook === "error"
             ? handleErrorRequest({ uploadable })
-            : Effect.succeed({ body: null, fiber: null }));
+            : Effect.succeed({ body: null, fiber: null });
 
       if (fiber) {
         yield* Effect.logDebug("Running fiber as daemon").pipe(
@@ -696,48 +699,49 @@ const handleUploadAction = (opts: {
     // Send metadata to UT server (non blocking as a daemon)
     // In dev, keep the stream open and simulate the callback requests as
     // files complete uploading
-    const fiber = yield* (isDev
-      ? metadataRequest.pipe(
-          Effect.tap(
-            logHttpClientResponse("Registered metadata", {
-              mixin: "None", // We're reading the stream so can't call a body mixin
-            }),
-          ),
-          Effect.tapError(logHttpClientError("Failed to register metadata")),
-          HttpClientResponse.stream,
-          handleJsonLineStream(MetadataFetchStreamPart, (chunk) =>
-            devHookRequest.pipe(
-              HttpClientRequest.setHeaders({
-                "uploadthing-hook": chunk.hook,
-                "x-uploadthing-signature": chunk.signature,
+    const fiber = yield* (
+      isDev
+        ? metadataRequest.pipe(
+            Effect.tap(
+              logHttpClientResponse("Registered metadata", {
+                mixin: "None", // We're reading the stream so can't call a body mixin
               }),
-              HttpClientRequest.setBody(
-                HttpBody.text(chunk.payload, "application/json"),
-              ),
-              httpClient.execute,
-              Effect.tap(
-                logHttpClientResponse(
-                  "Successfully forwarded callback request from dev stream",
-                ),
-              ),
-              Effect.catchTag("HttpClientError", (err) =>
-                err.response !== undefined
-                  ? handleDevStreamError(err, chunk.payload)
-                  : Effect.fail(err),
-              ),
-              Effect.annotateLogs({ ...chunk }),
-              Effect.asVoid,
-              ignoreLogged,
             ),
-          ),
-        )
-      : metadataRequest.pipe(
-          Effect.tap(logHttpClientResponse("Registered metadata")),
-          Effect.tapError(logHttpClientError("Failed to register metadata")),
-          Effect.flatMap(
-            HttpClientResponse.schemaBodyJson(MetadataFetchResponse),
-          ),
-        )
+            Effect.tapError(logHttpClientError("Failed to register metadata")),
+            HttpClientResponse.stream,
+            handleJsonLineStream(MetadataFetchStreamPart, (chunk) =>
+              devHookRequest.pipe(
+                HttpClientRequest.setHeaders({
+                  "uploadthing-hook": chunk.hook,
+                  "x-uploadthing-signature": chunk.signature,
+                }),
+                HttpClientRequest.setBody(
+                  HttpBody.text(chunk.payload, "application/json"),
+                ),
+                httpClient.execute,
+                Effect.tap(
+                  logHttpClientResponse(
+                    "Successfully forwarded callback request from dev stream",
+                  ),
+                ),
+                Effect.catchTag("HttpClientError", (err) =>
+                  err.response !== undefined
+                    ? handleDevStreamError(err, chunk.payload)
+                    : Effect.fail(err),
+                ),
+                Effect.annotateLogs({ ...chunk }),
+                Effect.asVoid,
+                ignoreLogged,
+              ),
+            ),
+          )
+        : metadataRequest.pipe(
+            Effect.tap(logHttpClientResponse("Registered metadata")),
+            Effect.tapError(logHttpClientError("Failed to register metadata")),
+            Effect.flatMap(
+              HttpClientResponse.schemaBodyJson(MetadataFetchResponse),
+            ),
+          )
     ).pipe(Effect.forkDetach);
 
     const presigneds = presignedUrls.map((p, i) => ({

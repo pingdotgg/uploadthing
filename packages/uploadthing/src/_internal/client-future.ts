@@ -394,7 +394,11 @@ export interface UploadFileOptions<TRoute extends AnyFileRoute> {
 export function uploadFile<TRoute extends AnyFileRoute>(
   url: string,
   { file, files, XHRImpl, ...options }: UploadFileOptions<TRoute>,
-): Effect.Effect<UploadedFile<TRoute> | FailedFile<TRoute>, never, FetchContext> {
+): Effect.Effect<
+  UploadedFile<TRoute> | FailedFile<TRoute>,
+  never,
+  FetchContext
+> {
   return fetchEff(url, { method: "HEAD", headers: options.traceHeaders }).pipe(
     Effect.map(({ headers }) =>
       Number.parseInt(headers.get("x-ut-range-start") ?? "0"),
@@ -410,89 +414,91 @@ export function uploadFile<TRoute extends AnyFileRoute>(
       }),
     ),
     Effect.flatMap((uploadingFile) =>
-      Effect.callback<UploadedFile<TRoute>, XHRError | UTStorageError>((resume) => {
-        const xhr = new XHRImpl();
-        xhr.open("PUT", url, true);
+      Effect.callback<UploadedFile<TRoute>, XHRError | UTStorageError>(
+        (resume) => {
+          const xhr = new XHRImpl();
+          xhr.open("PUT", url, true);
 
-        const rangeStart = uploadingFile.sent;
-        xhr.setRequestHeader("Range", `bytes=${rangeStart}-`);
-        xhr.setRequestHeader("x-uploadthing-version", version);
-        xhr.setRequestHeader("b3", options.traceHeaders.b3);
-        xhr.setRequestHeader("traceparent", options.traceHeaders.traceparent);
-        xhr.responseType = "json";
+          const rangeStart = uploadingFile.sent;
+          xhr.setRequestHeader("Range", `bytes=${rangeStart}-`);
+          xhr.setRequestHeader("x-uploadthing-version", version);
+          xhr.setRequestHeader("b3", options.traceHeaders.b3);
+          xhr.setRequestHeader("traceparent", options.traceHeaders.traceparent);
+          xhr.responseType = "json";
 
-        xhr.upload.addEventListener("progress", (ev) => {
-          uploadingFile.sent = rangeStart + ev.loaded;
-          options.onEvent({
-            type: "upload-progress",
-            file: uploadingFile,
-            files,
-          });
-        });
-        xhr.addEventListener("load", () => {
-          if (
-            xhr.status > 299 ||
-            Predicate.hasProperty(xhr.response, "error")
-          ) {
-            resume(
-              new UTStorageError({
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                message: String(xhr.response.error),
-                response: xhr.response,
-              }),
-            );
-          } else {
-            const uploadedFile = transitionToUploaded<TRoute>(
-              uploadingFile,
-              xhr.response as UploadPutResult,
-            );
+          xhr.upload.addEventListener("progress", (ev) => {
+            uploadingFile.sent = rangeStart + ev.loaded;
             options.onEvent({
-              type: "upload-completed",
-              file: uploadedFile,
+              type: "upload-progress",
+              file: uploadingFile,
               files,
             });
-            resume(Effect.succeed(uploadedFile));
+          });
+          xhr.addEventListener("load", () => {
+            if (
+              xhr.status > 299 ||
+              Predicate.hasProperty(xhr.response, "error")
+            ) {
+              resume(
+                new UTStorageError({
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                  message: String(xhr.response.error),
+                  response: xhr.response,
+                }),
+              );
+            } else {
+              const uploadedFile = transitionToUploaded<TRoute>(
+                uploadingFile,
+                xhr.response as UploadPutResult,
+              );
+              options.onEvent({
+                type: "upload-completed",
+                file: uploadedFile,
+                files,
+              });
+              resume(Effect.succeed(uploadedFile));
+            }
+          });
+          xhr.addEventListener("error", () => {
+            resume(
+              new XHRError({
+                message: `XHR failed ${xhr.status} ${xhr.statusText}`,
+                xhr: xhr,
+              }),
+            );
+          });
+
+          const formData = new FormData();
+          /**
+           * iOS/React Native FormData handling requires special attention:
+           *
+           * Issue: In React Native, iOS crashes with "attempt to insert nil object" when appending File directly
+           * to FormData. This happens because iOS tries to create NSDictionary from the file object and expects
+           * specific structure {uri, type, name}.
+           *
+           *
+           * Note: Don't try to use Blob or modify File object - iOS specifically needs plain object
+           * with these properties to create valid NSDictionary.
+           */
+          if ("uri" in file) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            formData.append("file", {
+              uri: file.uri as string,
+              type: file.type,
+              name: file.name,
+              ...(rangeStart > 0 && { range: rangeStart }),
+            } as any);
+          } else {
+            formData.append(
+              "file",
+              rangeStart > 0 ? file.slice(rangeStart) : file,
+            );
           }
-        });
-        xhr.addEventListener("error", () => {
-          resume(
-            new XHRError({
-              message: `XHR failed ${xhr.status} ${xhr.statusText}`,
-              xhr: xhr,
-            }),
-          );
-        });
+          xhr.send(formData);
 
-        const formData = new FormData();
-        /**
-         * iOS/React Native FormData handling requires special attention:
-         *
-         * Issue: In React Native, iOS crashes with "attempt to insert nil object" when appending File directly
-         * to FormData. This happens because iOS tries to create NSDictionary from the file object and expects
-         * specific structure {uri, type, name}.
-         *
-         *
-         * Note: Don't try to use Blob or modify File object - iOS specifically needs plain object
-         * with these properties to create valid NSDictionary.
-         */
-        if ("uri" in file) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          formData.append("file", {
-            uri: file.uri as string,
-            type: file.type,
-            name: file.name,
-            ...(rangeStart > 0 && { range: rangeStart }),
-          } as any);
-        } else {
-          formData.append(
-            "file",
-            rangeStart > 0 ? file.slice(rangeStart) : file,
-          );
-        }
-        xhr.send(formData);
-
-        return Effect.sync(() => xhr.abort());
-      }),
+          return Effect.sync(() => xhr.abort());
+        },
+      ),
     ),
     Effect.catch((error) => {
       const failedFile = transitionToFailed<TRoute>(file, error);

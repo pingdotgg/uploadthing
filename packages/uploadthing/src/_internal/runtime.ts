@@ -17,8 +17,9 @@ export const makeRuntime = (fetch: FetchEsque | undefined, config: unknown) => {
       FetchHttpClient.Fetch,
       // The `Fetch` reference defaults to `globalThis.fetch`, but resolve it
       // lazily so runtime-patched implementations (e.g. msw) are picked up.
-      (fetch as typeof globalThis.fetch) ??
-        ((...args) => globalThis.fetch(...args)),
+      fetch
+        ? (fetch as typeof globalThis.fetch)
+        : (...args) => globalThis.fetch(...args),
     ),
   );
 

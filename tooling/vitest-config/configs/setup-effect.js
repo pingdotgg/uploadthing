@@ -10,5 +10,5 @@ if (
   "setImmediate" in globalThis &&
   typeof globalThis.setImmediate !== "function"
 ) {
-  delete (globalThis as Record<string, any>).setImmediate;
+  delete globalThis.setImmediate;
 }

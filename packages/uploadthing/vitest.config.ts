@@ -24,7 +24,6 @@ export default mergeConfig(
             test: {
               include: ["test/browser/**/*.test.{ts,tsx}"],
               exclude: [...defaultExclude, "test/node/**"],
-              setupFiles: ["./test/browser/setup.ts"],
               name: "browser",
               browser: {
                 instances: [{ browser: "chromium" }],

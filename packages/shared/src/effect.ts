@@ -4,10 +4,10 @@ import * as Effect from "effect/Effect";
 import { BadRequestError, FetchError, InvalidJsonError } from "./tagged-errors";
 import type { FetchEsque, ResponseEsque } from "./types";
 
-export class FetchContext extends /** #__PURE__ */ Context.Service<
-  FetchContext,
-  FetchEsque
->()("uploadthing/Fetch") {}
+export class FetchContext
+  extends /** #__PURE__ */ Context.Service<FetchContext, FetchEsque>()(
+    "uploadthing/Fetch",
+  ) {}
 
 interface ResponseWithURL extends ResponseEsque {
   requestUrl: string;
