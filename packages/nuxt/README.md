@@ -1,155 +1,136 @@
 # Nuxt UploadThing Module
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![License][license-src]][license-href] [![Nuxt][nuxt-src]][nuxt-href]
+[![npm version](https://img.shields.io/npm/v/@uploadthing/nuxt/latest.svg?style=flat&colorA=020420&colorB=00DC82)](https://npmjs.com/package/@uploadthing/nuxt)
+[![npm downloads](https://img.shields.io/npm/dm/@uploadthing/nuxt.svg?style=flat&colorA=020420&colorB=00DC82)](https://npm.chart.dev/@uploadthing/nuxt)
+[![License](https://img.shields.io/npm/l/@uploadthing/nuxt.svg?style=flat&colorA=020420&colorB=00DC82)](https://npmjs.com/package/@uploadthing/nuxt)
+[![Nuxt](https://img.shields.io/badge/Nuxt-020420?logo=nuxt)](https://nuxt.com)
 
-Nuxt module for getting started with UploadThing in your Nuxt app.
 
-- [✨ &nbsp;Release Notes](/CHANGELOG.md)
+Nuxt module for UploadThing with type-safe router integration, generated components, and auto-registered helpers.
 
-## Quick Setup
+---
 
-1. Add `@uploadthing/nuxt` and `uploadthing` dependencies to your project
+## Features
+
+- Type-safe UploadThing router integration
+- Auto-generated upload components
+- Auto-imported UploadThing Vue helpers
+- Optional Tailwind styles integration
+
+
+---
+
+## Installation
 
 ```bash
-# Using pnpm
-pnpm add -D @uploadthing/nuxt
-pnpm add uploadthing
-
-# Using yarn
-yarn add --dev @uploadthing/nuxt
-yarn add uploadthing
-
-# Using npm
-npm install --save-dev @uploadthing/nuxt
-npm install uploadthing
-
-# Using bun
-bun add -D @uploadthing/nuxt
-bun add uploadthing
+pnpm add @uploadthing/nuxt uploadthing
 ```
 
-2. Add `@uploadthing/nuxt` to the `modules` section of `nuxt.config.ts`
+---
 
-```js
+## Quick Start
+
+1) Add the module in `nuxt.config.ts`
+
+```ts
 export default defineNuxtConfig({
-  modules: ["@uploadthing/nuxt"],
-});
+  modules: ['@uploadthing/nuxt'],
+
+  uploadthing: {
+    fileRouterPath: '@@/server/uploadthing',
+    fileRouterExport: 'fileRouter',
+    componentPrefix: 'Uploadthing',
+    useTailwindStyles: false,
+  },
+})
 ```
 
-That's it! You can now use @uploadthing/nuxt in your Nuxt app ✨
+2) Create your UploadThing router in `server/uploadthing.ts`
 
-## Usage
+```ts
+import { createUploadthing, type FileRouter } from 'uploadthing/h3'
 
-> For full documentation, see the
-> [UploadThing docs](https://docs.uploadthing.com/getting-started/nuxt)
+const f = createUploadthing()
 
-1. Create an upload router in your app:
-
-```js
-// server/uploadthing.ts
-import { createUploadthing, UTFiles } from "uploadthing/h3";
-import type { FileRouter } from "uploadthing/h3";
-
-const f = createUploadthing();
-
-/**
- * This is your Uploadthing file router. For more information:
- * @see https://docs.uploadthing.com/api-reference/server#file-routes
- */
-export const uploadRouter = {
-  videoAndImage: f({
-    image: {
-      maxFileSize: "4MB",
-      maxFileCount: 4,
-      acl: "public-read",
-    },
-    video: {
-      maxFileSize: "16MB",
-    },
+export const fileRouter = {
+  imageUploader: f({
+    image: { maxFileSize: '4MB', maxFileCount: 1 },
   })
-    .middleware(({ event, files }) => {
-      //           ^? H3Event
-
-      // Return some metadata to be stored with the file
-      return { foo: "bar" as const };
+    .middleware(async () => {
+      return { userId: 'demo-user' }
     })
-    .onUploadComplete(({ file, metadata }) => {
-      //                       ^? { foo: "bar" }
-      console.log("upload completed", file);
+    .onUploadComplete(async ({ metadata, file }) => {
+      return {
+        uploadedBy: metadata.userId,
+        url: file.ufsUrl,
+      }
     }),
-} satisfies FileRouter;
-
-export type UploadRouter = typeof uploadRouter;
+} satisfies FileRouter
 ```
 
-2. Mount a component in your app and start uploading files:
+3) Use generated components anywhere in your app
 
 ```vue
-<script setup lang="ts">
-const alert = (msg: string) => {
-  window.alert(msg);
-};
-</script>
-
 <template>
-  <div>Playground</div>
-  <UploadButton
+  <UploadThingUploadButton
     :config="{
-      endpoint: 'videoAndImage',
-      onClientUploadComplete: (res) => {
-        console.log(`onClientUploadComplete`, res);
-        alert('Upload Completed');
-      },
-      onUploadBegin: () => {
-        console.log(`onUploadBegin`);
-      },
-    }"
-  />
-
-  <UploadDropzone
-    :config="{
-      endpoint: 'videoAndImage',
-      onClientUploadComplete: (res) => {
-        console.log(`onClientUploadComplete`, res);
-        alert('Upload Completed');
-      },
-      onUploadBegin: () => {
-        console.log(`onUploadBegin`);
-      },
+      endpoint: 'imageUploader',
+      onClientUploadComplete: (res) => console.log(res),
+      onUploadError: (error) => console.error(error),
     }"
   />
 </template>
 ```
 
-Wow, that was easy!
 
-## Development
 
-From workspace root:
+## Tailwind Styles
 
-```bash
-# Install dependencies
-pnpm install
+To use UploadThing Tailwind styles, enable:
 
-# Develop with the playground
-pnpm dev
-
-# Run ESLint
-pnpm lint
+```ts
+uploadthing: {
+  useTailwindStyles: true,
+}
 ```
 
-<!-- Badges -->
+Requirements:
 
-[npm-version-src]:
-  https://img.shields.io/npm/v/@uploadthing/nuxt/latest.svg?style=flat&colorA=18181B&colorB=28CF8D
-[npm-version-href]: https://npmjs.com/package/@uploadthing/nuxt
-[npm-downloads-src]:
-  https://img.shields.io/npm/dm/@uploadthing/nuxt.svg?style=flat&colorA=18181B&colorB=28CF8D
-[npm-downloads-href]: https://npmjs.com/package/@uploadthing/nuxt
-[license-src]:
-  https://img.shields.io/npm/l/@uploadthing/nuxt.svg?style=flat&colorA=18181B&colorB=28CF8D
-[license-href]: https://npmjs.com/package/@uploadthing/nuxt
-[nuxt-src]: https://img.shields.io/badge/Nuxt-18181B?logo=nuxt.js
-[nuxt-href]: https://nuxt.com
+1. `tailwindcss` must be installed in your project.
+2. Import both Tailwind and `@uploadthing/nuxt` styles in your main CSS file (for example `assets/css/main.css`):
+
+```css
+@import "tailwindcss";
+@import '@uploadthing/nuxt'
+```
+
+If `tailwindcss` is missing, the module falls back to UploadThing default CSS.
+
+---
+
+## Module Options
+
+```ts
+uploadthing: {
+  fileRouterPath: '@@/server/uploadthing',
+  fileRouterExport: 'fileRouter',
+  componentPrefix: 'Uploadthing',
+  useTailwindStyles: false,
+}
+```
+
+- `fileRouterPath`: Path to your UploadThing router file.
+- `fileRouterExport`: Export name of the router in that file.
+- `componentPrefix`: Prefix for generated components (`<prefix>UploadButton`, `<prefix>UploadDropzone`).
+- `useTailwindStyles`: Enable UploadThing Tailwind styles integration.
+
+---
+
+## Auto-Imports
+
+The module auto-imports these helpers:
+
+- `useUploadThing`
+- `createUpload`
+- `routeRegistry`
+- `uploadFiles`
