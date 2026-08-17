@@ -62,7 +62,7 @@ export const getPostBody = <TBody = unknown>(opts: {
     on: (event: string, listener: (data: any) => void) => void;
   };
 }) =>
-  Effect.async<TBody | undefined, UploadThingError>((resume) => {
+  Effect.callback<TBody | undefined, UploadThingError>((resume) => {
     const { req } = opts;
     if (!req.method || !isBodyAllowed(req.method)) {
       return resume(Effect.succeed(undefined));
@@ -134,7 +134,7 @@ export const toWebRequest = (
 
   return parseURL(req).pipe(
     Effect.catchTag("InvalidURL", (e) => Effect.die(e)),
-    Effect.andThen(
+    Effect.map(
       (url) =>
         new Request(url, {
           method,

@@ -1,5 +1,4 @@
-import { unsafeCoerce } from "effect/Function";
-import * as Micro from "effect/Micro";
+import * as Effect from "effect/Effect";
 
 import type { FetchContext, MaybePromise } from "@uploadthing/shared";
 import {
@@ -37,7 +36,7 @@ const createAPIRequestUrl = (config: {
 export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
   payload: UTEvents[TEvent]["in"],
-) => Micro.Micro<UTEvents[TEvent]["out"], UploadThingError, FetchContext>;
+) => Effect.Effect<UTEvents[TEvent]["out"], UploadThingError, FetchContext>;
 
 /**
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
@@ -52,14 +51,14 @@ export const createUTReporter =
     traceHeaders: TraceHeaders;
   }): UTReporter =>
   (type, payload) =>
-    Micro.gen(function* () {
+    Effect.gen(function* () {
       const url = createAPIRequestUrl({
         url: cfg.url,
         slug: cfg.endpoint,
         actionType: type,
       });
       const headers = new Headers(
-        yield* Micro.promise(async () =>
+        yield* Effect.promise(async () =>
           typeof cfg.headers === "function" ? await cfg.headers() : cfg.headers,
         ),
       );
@@ -76,15 +75,15 @@ export const createUTReporter =
         body: JSON.stringify(payload),
         headers,
       }).pipe(
-        Micro.andThen(parseResponseJson),
+        Effect.andThen(parseResponseJson),
         /**
          * We don't _need_ to validate the response here, just cast it for now.
          * As of now, @effect/schema includes quite a few bytes we cut out by this...
          * We have "strong typing" on the backend that ensures the shape should match.
          */
-        Micro.map(unsafeCoerce<unknown, UTEvents[typeof type]["out"]>),
-        Micro.catchTag("FetchError", (e) =>
-          Micro.fail(
+        Effect.map((_) => _ as UTEvents[typeof type]["out"]),
+        Effect.catchTag("FetchError", (e) =>
+          Effect.fail(
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",
               message: `Failed to report event "${type}" to UploadThing server`,
@@ -92,8 +91,8 @@ export const createUTReporter =
             }),
           ),
         ),
-        Micro.catchTag("BadRequestError", (e) =>
-          Micro.fail(
+        Effect.catchTag("BadRequestError", (e) =>
+          Effect.fail(
             new UploadThingError({
               code: getErrorTypeFromStatusCode(e.status),
               message: e.getMessage(),
@@ -101,8 +100,8 @@ export const createUTReporter =
             }),
           ),
         ),
-        Micro.catchTag("InvalidJson", (e) =>
-          Micro.fail(
+        Effect.catchTag("InvalidJson", (e) =>
+          Effect.fail(
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",
               message: "Failed to parse response from UploadThing server",

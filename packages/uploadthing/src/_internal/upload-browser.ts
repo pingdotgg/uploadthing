@@ -1,6 +1,5 @@
-import { unsafeCoerce } from "effect/Function";
-import * as Micro from "effect/Micro";
-import { hasProperty, isRecord } from "effect/Predicate";
+import * as Effect from "effect/Effect";
+import { hasProperty, isObject } from "effect/Predicate";
 
 import type { FetchContext, FetchError } from "@uploadthing/shared";
 import { fetchEff, UploadThingError } from "@uploadthing/shared";
@@ -30,7 +29,7 @@ const uploadWithProgress = (
       | undefined;
   },
 ) =>
-  Micro.async<unknown, UploadThingError, FetchContext>((resume) => {
+  Effect.callback<unknown, UploadThingError, FetchContext>((resume) => {
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", presigned.url, true);
     xhr.setRequestHeader("Range", `bytes=${rangeStart}-`);
@@ -47,7 +46,7 @@ const uploadWithProgress = (
       previousLoaded = loaded;
     });
     xhr.addEventListener("load", () => {
-      if (xhr.status >= 200 && xhr.status < 300 && isRecord(xhr.response)) {
+      if (xhr.status >= 200 && xhr.status < 300 && isObject(xhr.response)) {
         if (hasProperty(xhr.response, "error")) {
           resume(
             new UploadThingError({
@@ -57,7 +56,7 @@ const uploadWithProgress = (
             }),
           );
         } else {
-          resume(Micro.succeed(xhr.response));
+          resume(Effect.succeed(xhr.response));
         }
       } else {
         resume(
@@ -105,7 +104,7 @@ const uploadWithProgress = (
     }
     xhr.send(formData);
 
-    return Micro.sync(() => xhr.abort());
+    return Effect.sync(() => xhr.abort());
   });
 
 export const uploadFile = <
@@ -127,16 +126,18 @@ export const uploadFile = <
     method: "HEAD",
     headers: opts.traceHeaders,
   }).pipe(
-    Micro.map(({ headers }) =>
+    Effect.map(({ headers }) =>
       parseInt(headers.get("x-ut-range-start") ?? "0", 10),
     ),
-    Micro.tap((start) =>
-      opts.onUploadProgress?.({
-        delta: start,
-        loaded: start,
-      }),
+    Effect.tap((start) =>
+      Effect.sync(() =>
+        opts.onUploadProgress?.({
+          delta: start,
+          loaded: start,
+        }),
+      ),
     ),
-    Micro.flatMap((start) =>
+    Effect.flatMap((start) =>
       uploadWithProgress(file, start, presigned, {
         traceHeaders: opts.traceHeaders,
         onUploadProgress: (progressEvent) =>
@@ -146,8 +147,8 @@ export const uploadFile = <
           }),
       }),
     ),
-    Micro.map(unsafeCoerce<unknown, UploadPutResult<TServerOutput>>),
-    Micro.map((uploadResponse) => ({
+    Effect.map((_) => _ as UploadPutResult<TServerOutput>),
+    Effect.map((uploadResponse) => ({
       name: file.name,
       size: file.size,
       key: presigned.key,
@@ -179,7 +180,7 @@ export const uploadFilesInternal = <
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter[TEndpoint]>,
-): Micro.Micro<
+): Effect.Effect<
   ClientUploadedFileData<TServerOutput>[],
   UploadThingError | FetchError,
   FetchContext
@@ -197,7 +198,7 @@ export const uploadFilesInternal = <
   const totalSize = opts.files.reduce((acc, f) => acc + f.size, 0);
   let totalLoaded = 0;
 
-  return Micro.flatMap(
+  return Effect.flatMap(
     reportEventToUT("upload", {
       input: "input" in opts ? opts.input : null,
       files: opts.files.map((f) => ({
@@ -208,11 +209,11 @@ export const uploadFilesInternal = <
       })),
     }),
     (presigneds) =>
-      Micro.forEach(
+      Effect.forEach(
         presigneds,
         (presigned, i) =>
-          Micro.flatMap(
-            Micro.sync(() =>
+          Effect.flatMap(
+            Effect.sync(() =>
               opts.onUploadBegin?.({ file: opts.files[i]!.name }),
             ),
             () =>

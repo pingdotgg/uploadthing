@@ -42,22 +42,22 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "workspace:*",
-    "effect": "3.21.0",
+    "effect": "4.0.0-rc.110",
     "sqids": "^0.3.0"
   },
   "devDependencies": {
-    "@effect/vitest": "0.29.0",
+    "@effect/vitest": "4.0.0-rc.110",
     "@types/react": "19.2.7",
     "@uploadthing/eslint-config": "workspace:",
     "@uploadthing/tsconfig": "workspace:",
     "@uploadthing/vitest-config": "workspace:",
-    "@vitest/coverage-istanbul": "3.2.4",
+    "@vitest/coverage-istanbul": "4.1.10",
     "eslint": "9.25.1",
     "react": "19.2.2",
     "solid-js": "^1.9.3",
     "tsdown": "0.14.1",
     "typescript": "5.8.3",
-    "vitest": "3.2.4",
+    "vitest": "4.1.10",
     "vue": "^3.4.21",
     "wait-on": "^8.0.1"
   }

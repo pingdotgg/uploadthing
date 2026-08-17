@@ -1,6 +1,5 @@
 import * as Data from "effect/Data";
 import * as Effect from "effect/Effect";
-import type * as S from "effect/Schema";
 
 import type {
   ExpandedRouteConfig,
@@ -55,7 +54,7 @@ class FileCountMismatch extends Data.Error<{
 // e.g. uploading more videos than allowed, or a file that is larger than allowed.
 // This is double-checked on infra side, but we want to fail early to avoid network latency.
 export const assertFilesMeetConfig = (
-  files: S.Schema.Type<typeof UploadActionPayload>["files"],
+  files: (typeof UploadActionPayload.Type)["files"],
   routeConfig: ExpandedRouteConfig,
 ): Effect.Effect<
   null,

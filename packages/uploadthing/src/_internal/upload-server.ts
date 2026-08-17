@@ -1,7 +1,6 @@
-import * as HttpClient from "@effect/platform/HttpClient";
-import * as HttpClientRequest from "@effect/platform/HttpClientRequest";
 import * as Effect from "effect/Effect";
-import { unsafeCoerce } from "effect/Function";
+import * as HttpClient from "effect/unstable/http/HttpClient";
+import * as HttpClientRequest from "effect/unstable/http/HttpClientRequest";
 
 import { UploadThingError } from "@uploadthing/shared";
 
@@ -36,9 +35,8 @@ export const uploadWithoutProgress = (
             cause: e,
           }),
       ),
-      Effect.andThen((_) => _.json),
-      Effect.andThen(unsafeCoerce<unknown, UploadPutResult>),
-      Effect.scoped,
+      Effect.flatMap((_) => _.json),
+      Effect.map((_) => _ as UploadPutResult),
     );
 
     yield* Effect.logDebug(`File ${file.name} uploaded successfully`).pipe(
