@@ -24,9 +24,9 @@
   },
   "dependencies": {
     "@playwright/test": "1.52.0",
-    "@uploadthing/react": "7.3.3",
+    "@uploadthing/react": "7.3.4",
     "concurrently": "^9.1.2",
     "typescript": "5.8.3",
-    "uploadthing": "7.7.4"
+    "uploadthing": "7.7.5"
   }
 }

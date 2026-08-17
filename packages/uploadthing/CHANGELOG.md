@@ -1,5 +1,20 @@
 # uploadthing
 
+## 7.7.5
+
+### Patch Changes
+
+- [#1267](https://github.com/pingdotgg/uploadthing/pull/1267)
+  [`d822137`](https://github.com/pingdotgg/uploadthing/commit/d822137dc86c48365bb0dc10a2454ef17e5bcbaf)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  optional hashFn to generateKey for wider key entropy
+
+- Updated dependencies
+  [[`d822137`](https://github.com/pingdotgg/uploadthing/commit/d822137dc86c48365bb0dc10a2454ef17e5bcbaf),
+  [`d20c5ba`](https://github.com/pingdotgg/uploadthing/commit/d20c5ba5ed3781ebcea315bf9c10ebaedac3c407)]:
+  - @uploadthing/shared@7.1.11
+  - @uploadthing/mime-types@0.3.7
+
 ## 7.7.4
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @uploadthing/react
 
+## 7.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  [[`d822137`](https://github.com/pingdotgg/uploadthing/commit/d822137dc86c48365bb0dc10a2454ef17e5bcbaf)]:
+  - @uploadthing/shared@7.1.11
+
 ## 7.3.3
 
 ### Patch Changes
