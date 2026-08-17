@@ -120,6 +120,35 @@ new Elysia()
   });
 ```
 
+<Note>
+  **Heads up if you refactor the handler shape.** The example above works
+  because Elysia's static analyzer leaves `ev.request` alone. If you
+  rewrite either route to the more idiomatic destructured form —
+  `({ request }) => handlers(request)` — the analyzer infers the route
+  reads `body` and Elysia pre-parses the request via `request.json()`,
+  consuming the stream before UploadThing's handler can read it. The
+  client sees a silent empty-body 400.
+
+  The fix is to opt out of body parsing for the route by passing
+  `{ parse: "none" }` as the third argument:
+
+  ```ts
+  .get("/api/uploadthing", ({ request }) => handlers(request), {
+    parse: "none",
+  })
+  .post("/api/uploadthing", ({ request }) => handlers(request), {
+    parse: "none",
+  })
+  ```
+
+  This is the same option Elysia uses internally for its own
+  [`.mount()` method](https://elysiajs.com/patterns/mount.html) and is
+  documented under
+  [explicit parsers](https://elysiajs.com/essential/life-cycle.html#explicit-parser).
+  See [elysiajs/elysia#1252](https://github.com/elysiajs/elysia/issues/1252)
+  for background.
+</Note>
+
 ### Hono
 
 ```ts
