@@ -15,6 +15,7 @@ import type {
   MaybeUrl,
   SerializedUploadThingError,
 } from "@uploadthing/shared";
+import { logDeprecationWarning } from "uploadthing/_internal/deprecations";
 
 import { IngestUrl, UTToken } from "../_internal/config";
 import { uploadWithoutProgress } from "../_internal/upload-server";
@@ -146,8 +147,18 @@ export const uploadFile = (
 
     return {
       key: presigned.key,
-      url: response.url,
-      appUrl: response.appUrl,
+      get url() {
+        logDeprecationWarning(
+          "`file.url` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+        );
+        return response._internalUrl;
+      },
+      get appUrl() {
+        logDeprecationWarning(
+          "`file.appUrl` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+        );
+        return response._internalAppUrl;
+      },
       ufsUrl: response.ufsUrl,
       lastModified: file.lastModified ?? Date.now(),
       name: file.name,
