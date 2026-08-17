@@ -1,5 +1,4 @@
 import { existsSync, readdirSync } from "fs";
-import { defineConfig, mergeConfig } from "vitest/config";
 
 /**
  *
@@ -29,7 +28,8 @@ const aliases = readdirSync(pkgRoot(""))
     }),
   );
 
-export const baseConfig = defineConfig({
+/** @type {import("vitest/config").ViteUserConfig} */
+export const baseConfig = {
   test: {
     silent: "passed-only",
     mockReset: true,
@@ -48,4 +48,4 @@ export const baseConfig = defineConfig({
     },
   },
   resolve: { alias: aliases },
-});
+};

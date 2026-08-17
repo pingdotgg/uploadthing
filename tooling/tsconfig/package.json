@@ -6,8 +6,8 @@
     "base.json"
   ],
   "dependencies": {
-    "@effect/language-service": "0.86.4",
-    "effect": "4.0.0-beta.93",
+    "@effect/language-service": "0.87.2",
+    "effect": "4.0.0-rc.110",
     "typescript": "5.8.3"
   }
 }
