@@ -231,6 +231,25 @@ export function Page() {
 </Tabs>
 
 <Note>
+  If you wrap your Tailwind config with `withUt` and use Storybook with webpack,
+  Storybook may fail to resolve Node builtins that `withUt` imports. Map them in
+  `.storybook/main.ts`:
+
+```ts
+// .storybook/main.ts
+webpackFinal: async (config) => {
+  config.externals = config.externals || {};
+  Object.assign(config.externals, {
+    "node:path": "path",
+    "node:module": "module",
+  });
+  return config;
+},
+```
+
+</Note>
+
+<Note>
   If you're not wrapping your config as shown above, you have to import our
   stylesheet into your app. Otherwise, components will not look right.
 
