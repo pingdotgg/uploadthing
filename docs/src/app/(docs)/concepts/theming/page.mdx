@@ -238,11 +238,17 @@ export function Page() {
 ```ts
 // .storybook/main.ts
 webpackFinal: async (config) => {
-  config.externals = config.externals || {};
-  Object.assign(config.externals, {
+  const nodeExternals = {
     "node:path": "path",
     "node:module": "module",
-  });
+  };
+  if (Array.isArray(config.externals)) {
+    config.externals.push(nodeExternals);
+  } else if (config.externals) {
+    config.externals = [config.externals, nodeExternals];
+  } else {
+    config.externals = nodeExternals;
+  }
   return config;
 },
 ```
