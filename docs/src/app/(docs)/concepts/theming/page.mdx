@@ -238,7 +238,9 @@ export function Page() {
 
 ```ts
 // .storybook/main.ts
-export default {
+import type { StorybookConfig } from "@storybook/react-webpack5";
+
+const config: StorybookConfig = {
   // ...your existing Storybook config
   webpackFinal: async (config) => {
     const nodeExternals = {
@@ -256,6 +258,8 @@ export default {
     return config;
   },
 };
+
+export default config;
 ```
 
 </Note>
