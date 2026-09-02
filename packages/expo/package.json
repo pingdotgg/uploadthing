@@ -48,6 +48,7 @@
     "eslint": "9.25.1",
     "expo-constants": "^16.0.0",
     "expo-document-picker": "^12.0.1",
+    "expo-file-system": "^17.0.1",
     "expo-image-picker": "^15.0.4",
     "react": "19.2.2",
     "react-native": "^0.74.1",
@@ -59,6 +60,7 @@
   "peerDependencies": {
     "expo-constants": "*",
     "expo-document-picker": "*",
+    "expo-file-system": "*",
     "expo-image-picker": "*",
     "react": "^17.0.2 || ^18.0.0 || ^19.0.0",
     "react-native": "*",

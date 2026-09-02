@@ -9,6 +9,7 @@ import type { FileRouter } from "uploadthing/types";
 import { peerDependencies } from "../package.json";
 import { GENERATE_useDocumentUploader } from "./document-picker";
 import { GENERATE_useImageUploader } from "./image-picker";
+import { toRNFormDataFile } from "./rn-formdata";
 
 export interface GenerateTypedHelpersOptions {
   /**
@@ -81,5 +82,35 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
   const useImageUploader = GENERATE_useImageUploader<TRouter>(opts);
   const useDocumentUploader = GENERATE_useDocumentUploader<TRouter>(opts);
 
-  return { ...vanillaHelpers, useImageUploader, useDocumentUploader };
+  const useUploadThing: typeof vanillaHelpers.useUploadThing = (
+    endpoint,
+    hookOpts,
+  ) => {
+    const helpers = vanillaHelpers.useUploadThing(endpoint, hookOpts);
+    return {
+      ...helpers,
+      startUpload: async (...args) => {
+        args[0] = await Promise.all(args[0].map(toRNFormDataFile));
+        return helpers.startUpload(...args);
+      },
+    };
+  };
+
+  const uploadFiles: typeof vanillaHelpers.uploadFiles = async (
+    slug,
+    uploadOpts,
+  ) => {
+    return vanillaHelpers.uploadFiles(slug, {
+      ...uploadOpts,
+      files: await Promise.all(uploadOpts.files.map(toRNFormDataFile)),
+    });
+  };
+
+  return {
+    ...vanillaHelpers,
+    useUploadThing,
+    uploadFiles,
+    useImageUploader,
+    useDocumentUploader,
+  };
 };
