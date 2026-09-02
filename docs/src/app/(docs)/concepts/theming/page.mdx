@@ -233,24 +233,29 @@ export function Page() {
 <Note>
   If you wrap your Tailwind config with `withUt` and use Storybook with webpack,
   Storybook may fail to resolve Node builtins that `withUt` imports. Map them in
-  `.storybook/main.ts`:
+  `.storybook/main.ts` (merge `webpackFinal` into your existing export if you
+  already have one):
 
 ```ts
 // .storybook/main.ts
-webpackFinal: async (config) => {
-  const nodeExternals = {
-    "node:path": "path",
-    "node:module": "module",
-  };
-  if (Array.isArray(config.externals)) {
-    config.externals.push(nodeExternals);
-  } else if (config.externals) {
-    config.externals = [config.externals, nodeExternals];
-  } else {
-    config.externals = nodeExternals;
-  }
-  return config;
-},
+export default {
+  // ...your existing Storybook config
+  webpackFinal: async (config) => {
+    const nodeExternals = {
+      // commonjs form avoids webpack's default `var` externalsType
+      "node:path": "commonjs path",
+      "node:module": "commonjs module",
+    };
+    if (Array.isArray(config.externals)) {
+      config.externals.push(nodeExternals);
+    } else if (config.externals) {
+      config.externals = [config.externals, nodeExternals];
+    } else {
+      config.externals = nodeExternals;
+    }
+    return config;
+  },
+};
 ```
 
 </Note>
