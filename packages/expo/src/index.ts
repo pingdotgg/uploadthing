@@ -86,14 +86,16 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
     endpoint,
     hookOpts,
   ) => {
-    const helpers = vanillaHelpers.useUploadThing(endpoint, hookOpts);
-    return {
-      ...helpers,
-      startUpload: async (...args) => {
-        args[0] = await Promise.all(args[0].map(toRNFormDataFile));
-        return helpers.startUpload(...args);
+    return vanillaHelpers.useUploadThing(endpoint, {
+      ...hookOpts,
+      // `useUploadThing` applies `onBeforeUploadBegin` inside `startUpload`,
+      // so convert after the user callback can replace files.
+      onBeforeUploadBegin: async (files) => {
+        const maybeReplaced =
+          (await hookOpts?.onBeforeUploadBegin?.(files)) ?? files;
+        return Promise.all(maybeReplaced.map(toRNFormDataFile));
       },
-    };
+    });
   };
 
   const uploadFiles: typeof vanillaHelpers.uploadFiles = async (

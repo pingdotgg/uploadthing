@@ -34,11 +34,16 @@ const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
  * According to React Native's FormData implementation:
  * "a "blob", which in React Native just means an object with a uri attribute"
  * @see https://github.com/facebook/react-native/blob/030663bb0634fc76f811cdc63e4d09e7ca32f3d4/packages/react-native/Libraries/Network/FormData.js#L78C1-L82C48
+ *
+ * React Native 0.74 File defines `name`/`type` as getter-only, so assigning
+ * those onto the input File can throw. Return a separate wrapper with own
+ * `uri`/`type`/`name` whose prototype is the original file (preserving size,
+ * bytes, and methods).
  */
-const assignRNFormDataProperties = (
+const wrapRNFormDataFile = (
   file: File,
   properties: { uri: string; type: string; name: string },
-): File => Object.assign(file, properties);
+): File => Object.setPrototypeOf({ ...properties }, file) as File;
 
 export const toRNFormDataFile = async (file: File): Promise<File> => {
   const type = file.type || "application/octet-stream";
@@ -46,7 +51,7 @@ export const toRNFormDataFile = async (file: File): Promise<File> => {
   const fileWithUri = file as File & { uri?: unknown };
 
   if (typeof fileWithUri.uri === "string") {
-    return assignRNFormDataProperties(file, {
+    return wrapRNFormDataFile(file, {
       uri: fileWithUri.uri,
       type,
       name,
@@ -68,5 +73,5 @@ export const toRNFormDataFile = async (file: File): Promise<File> => {
     { encoding: FileSystem.EncodingType.Base64 },
   );
 
-  return assignRNFormDataProperties(file, { uri, type, name });
+  return wrapRNFormDataFile(file, { uri, type, name });
 };
