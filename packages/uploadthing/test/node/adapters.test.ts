@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-globals */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { NextRequest } from "next/server";
+import { after, NextRequest } from "next/server";
+import type * as NextServer from "next/server";
 import * as FetchHttpClient from "@effect/platform/FetchHttpClient";
 import * as HttpServerRequest from "@effect/platform/HttpServerRequest";
 import * as HttpServerResponse from "@effect/platform/HttpServerResponse";
@@ -32,6 +33,14 @@ import {
   testToken,
   uploadCompleteMock,
 } from "../__test-helpers";
+
+vi.mock("next/server", async () => {
+  const actual = (await vi.importActual("next/server")) as typeof NextServer;
+  return {
+    ...actual,
+    after: vi.fn(),
+  };
+});
 
 const server = setupServer(...handlers);
 beforeAll(() => server.listen({ onUnhandledRequest: "bypass" }));
@@ -311,6 +320,9 @@ describe("adapters:next", async () => {
         middlewareMock(opts);
         expectTypeOf<{
           req: NextRequest;
+          ctx: {
+            waitUntil: (task: Promise<unknown> | (() => unknown)) => void;
+          };
         }>(opts);
         return {};
       })
@@ -361,7 +373,10 @@ describe("adapters:next", async () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
-      expect.objectContaining({ req }),
+      expect.objectContaining({
+        req,
+        ctx: { waitUntil: expect.any(Function) },
+      }),
     );
 
     // Should proceed to generate a signed URL
@@ -395,6 +410,39 @@ describe("adapters:next", async () => {
       }),
       method: "POST",
     });
+  });
+
+  it("hands ctx.waitUntil to Next.js after", async () => {
+    const task = vi.fn(() => Promise.resolve("deleted"));
+    const handlers = createRouteHandler({
+      router: {
+        background: f({ blob: {} })
+          .middleware((opts) => {
+            opts.ctx.waitUntil(task);
+            return {};
+          })
+          .onUploadComplete(uploadCompleteMock),
+      },
+      config: { token: testToken.encoded },
+    });
+
+    const res = await handlers.POST(
+      new NextRequest(createApiUrl("background", "upload"), {
+        method: "POST",
+        headers: {
+          ...baseHeaders,
+          host: "localhost:3000",
+          "x-forwarded-proto": "http",
+        },
+        body: JSON.stringify({
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
+        }),
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(after).toHaveBeenCalledWith(task);
+    expect(task).not.toHaveBeenCalled();
   });
 });
 

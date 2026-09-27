@@ -299,4 +299,29 @@ properties:
     An object with info for the file that was uploaded, such as the name, key,
     size, url etc.
   </Property>
+  <Property name="ctx" since="7.8" type="RequestContext">
+    Present on the Next.js App Router adapter (`uploadthing/next`).
+    `ctx.waitUntil` schedules work with Next.js
+    [`after`](https://nextjs.org/docs/app/api-reference/functions/after), so the
+    client receives this function's return value without waiting for that work.
+    Requires Next.js 15. The same `ctx` is passed to `middleware` and
+    `onUploadError`.
+  </Property>
 </Properties>
+
+```ts
+import { createUploadthing } from "uploadthing/next";
+import { UTApi } from "uploadthing/server";
+
+const f = createUploadthing();
+const utapi = new UTApi();
+
+f(["image"])
+  .middleware(async () => {
+    return { oldFileKey: "previous-key" };
+  })
+  .onUploadComplete(async ({ metadata, ctx }) => {
+    ctx.waitUntil(utapi.deleteFiles(metadata.oldFileKey));
+    return { deletedPrevious: true };
+  });
+```
