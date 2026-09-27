@@ -38,22 +38,45 @@ export type RequestContext = {
 
 let didWarnMissingAfter = false;
 
+const warnTaskMayFreeze = (): void => {
+  if (didWarnMissingAfter) return;
+  didWarnMissingAfter = true;
+  // eslint-disable-next-line no-console
+  console.warn(
+    "[uploadthing] ctx.waitUntil could not register with Next.js after. The task was started, but a serverless function may freeze it when the response ends.",
+  );
+};
+
+/** Run a task outside Next.js `after`. Failures stay in the background. */
+const runTask = (task: AfterTask): void => {
+  try {
+    const pending = typeof task === "function" ? task() : task;
+    void Promise.resolve(pending).catch((error: unknown) => {
+      // eslint-disable-next-line no-console
+      console.error("[uploadthing] ctx.waitUntil task failed.", error);
+    });
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("[uploadthing] ctx.waitUntil task failed.", error);
+  }
+};
+
 const scheduleAfterResponse = (task: AfterTask): void => {
   const after = (NextServer as { after?: (task: AfterTask) => void }).after;
   if (typeof after === "function") {
-    after(task);
-    return;
+    try {
+      after(task);
+      return;
+    } catch {
+      // `after` throws outside the request scope. In development the callback
+      // fiber can outlive that scope, so the task still has to run.
+      warnTaskMayFreeze();
+    }
+  } else {
+    warnTaskMayFreeze();
   }
 
-  if (!didWarnMissingAfter) {
-    didWarnMissingAfter = true;
-    // eslint-disable-next-line no-console
-    console.warn(
-      "[uploadthing] ctx.waitUntil needs Next.js 15. The task was started, but a serverless function may freeze it when the response ends.",
-    );
-  }
-
-  void Promise.resolve(typeof task === "function" ? task() : task);
+  runTask(task);
 };
 
 type AdapterArgs = {

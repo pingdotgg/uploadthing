@@ -22,6 +22,8 @@ import {
   vi,
 } from "vitest";
 
+import { signPayload } from "@uploadthing/shared";
+
 import {
   baseHeaders,
   createApiUrl,
@@ -31,8 +33,11 @@ import {
   requestSpy,
   requestsToDomain,
   testToken,
+  UFS_HOST,
   uploadCompleteMock,
+  UTFS_URL,
 } from "../__test-helpers";
+import { UploadedFileData } from "../../src/_internal/shared-schemas";
 
 vi.mock("next/server", async () => {
   const actual = (await vi.importActual("next/server")) as typeof NextServer;
@@ -437,6 +442,141 @@ describe("adapters:next", async () => {
         body: JSON.stringify({
           files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
         }),
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(after).toHaveBeenCalledWith(task);
+    expect(task).not.toHaveBeenCalled();
+  });
+
+  it("runs the task when Next.js after throws", async () => {
+    vi.mocked(after).mockImplementation(() => {
+      throw new Error("after was called outside a request scope");
+    });
+    const errorLog = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const warnLog = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const task = vi.fn(() => {
+      throw new Error("boom");
+    });
+    const handlers = createRouteHandler({
+      router: {
+        background: f({ blob: {} })
+          .middleware((opts) => {
+            opts.ctx.waitUntil(task);
+            return {};
+          })
+          .onUploadComplete(uploadCompleteMock),
+      },
+      config: { token: testToken.encoded },
+    });
+
+    const res = await handlers.POST(
+      new NextRequest(createApiUrl("background", "upload"), {
+        method: "POST",
+        headers: {
+          ...baseHeaders,
+          host: "localhost:3000",
+          "x-forwarded-proto": "http",
+        },
+        body: JSON.stringify({
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
+        }),
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(task).toHaveBeenCalledOnce();
+    expect(errorLog).toHaveBeenCalled();
+    errorLog.mockRestore();
+    warnLog.mockRestore();
+  });
+
+  it("handles a rejected task when Next.js after throws", async () => {
+    vi.mocked(after).mockImplementation(() => {
+      throw new Error("after was called outside a request scope");
+    });
+    const errorLog = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const warnLog = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const unhandled: Array<unknown> = [];
+    const onUnhandled = (reason: unknown) => {
+      unhandled.push(reason);
+    };
+    process.on("unhandledRejection", onUnhandled);
+    const handlers = createRouteHandler({
+      router: {
+        background: f({ blob: {} })
+          .middleware((opts) => {
+            opts.ctx.waitUntil(Promise.reject(new Error("delete failed")));
+            return {};
+          })
+          .onUploadComplete(uploadCompleteMock),
+      },
+      config: { token: testToken.encoded },
+    });
+
+    const res = await handlers.POST(
+      new NextRequest(createApiUrl("background", "upload"), {
+        method: "POST",
+        headers: {
+          ...baseHeaders,
+          host: "localhost:3000",
+          "x-forwarded-proto": "http",
+        },
+        body: JSON.stringify({
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
+        }),
+      }),
+    );
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    process.off("unhandledRejection", onUnhandled);
+
+    expect(res.status).toBe(200);
+    expect(unhandled).toEqual([]);
+    errorLog.mockRestore();
+    warnLog.mockRestore();
+  });
+
+  it("hands ctx.waitUntil to Next.js after from onUploadComplete", async () => {
+    const task = vi.fn(() => Promise.resolve("deleted"));
+    const handlers = createRouteHandler({
+      router: {
+        background: f({ blob: {} })
+          .middleware(() => ({}))
+          .onUploadComplete((opts) => {
+            opts.ctx.waitUntil(task);
+          }),
+      },
+      config: { token: testToken.encoded },
+    });
+    const payload = JSON.stringify({
+      status: "uploaded",
+      metadata: {},
+      origin: "https://example.com",
+      file: new UploadedFileData({
+        url: `${UTFS_URL}/f/some-random-key.png`,
+        appUrl: `${UTFS_URL}/a/${testToken.decoded.appId}/f/some-random-key.png`,
+        ufsUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
+        name: "foo.png",
+        key: "some-random-key.png",
+        size: 48,
+        type: "image/png",
+        customId: null,
+        fileHash: "some-md5-hash",
+      }),
+    });
+    const signature = await Effect.runPromise(
+      signPayload(payload, testToken.decoded.apiKey),
+    );
+
+    const res = await handlers.POST(
+      new NextRequest(createApiUrl("background"), {
+        method: "POST",
+        headers: {
+          "uploadthing-hook": "callback",
+          "x-uploadthing-signature": signature,
+        },
+        body: payload,
       }),
     );
 
