@@ -67,54 +67,64 @@ const settleTask = (task: AfterTask): Promise<void> => {
   }
 };
 
-type RequestScheduler = {
-  enqueue: (task: AfterTask) => void;
+/**
+ * A promise is already running, so its rejection handler is attached now.
+ * A callback stays deferred until it is run.
+ */
+const deferTask = (task: AfterTask): (() => Promise<void>) => {
+  if (typeof task === "function") return () => settleTask(task);
+  const settled = settleTask(task);
+  return () => settled;
+};
+
+type Scheduler = { enqueue: (task: AfterTask) => void };
+
+type SchedulerState = "queueing" | "flushed" | "unregistered";
+
+const inProcess: Scheduler = {
+  enqueue: (task) => void deferTask(task)(),
 };
 
 /**
  * `after` reads the request store at call time. Hooks run later, sometimes
- * after that store is gone, so the queue is opened here and hooks only enqueue.
+ * after that store is gone, so `after` is registered here and hooks enqueue.
  */
-const openScheduler = (): RequestScheduler => {
-  const tasks: Array<AfterTask> = [];
-  let sealed = false;
-  let failed = false;
+const openScheduler = (): Scheduler => {
+  const queue: Array<() => Promise<void>> = [];
+  let state: SchedulerState = "queueing";
 
   const flush = (): Promise<void> => {
-    sealed = true;
-    const batch = tasks.splice(0, tasks.length);
-    return Promise.all(batch.map(settleTask)).then(() => undefined);
+    const batch = queue.splice(0);
+    if (batch.length === 0) {
+      state = "flushed";
+      return Promise.resolve();
+    }
+    return Promise.all(batch.map((run) => run())).then(flush);
   };
 
   if (typeof NextServer.after === "function") {
     try {
       NextServer.after(flush);
     } catch {
-      // Thrown before registration. Leave `flush` uncalled so the task runs once.
-      failed = true;
-      sealed = true;
+      // Thrown before registration, so `flush` never runs.
+      state = "unregistered";
     }
   } else {
-    failed = true;
-    sealed = true;
+    state = "unregistered";
   }
 
-  return {
-    enqueue(task) {
-      if (failed) {
-        warnTaskMayFreeze();
-        void settleTask(task);
-        return;
-      }
-      if (sealed) {
-        // Development detaches callback hooks after the response. `after`
-        // already ran, and the dev server still finishes the task.
-        void settleTask(task);
-        return;
-      }
-      tasks.push(task);
+  const byState: Record<SchedulerState, (run: () => Promise<void>) => void> = {
+    queueing: (run) => void queue.push(run),
+    // Development detaches callback hooks past the response, and the dev
+    // server still finishes the task.
+    flushed: (run) => void run(),
+    unregistered: (run) => {
+      warnTaskMayFreeze();
+      void run();
     },
   };
+
+  return { enqueue: (task) => byState[state](deferTask(task)) };
 };
 
 type AdapterArgs = {
@@ -132,16 +142,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   const handler = makeAdapterHandler<[NextRequest], AdapterArgs>(
     (req) => {
       // Built eagerly, while the route handler still holds the request scope.
-      const scheduler = req.method === "POST" ? openScheduler() : undefined;
-      return Effect.succeed({
-        req,
-        ctx: {
-          waitUntil: (task) => {
-            if (scheduler) scheduler.enqueue(task);
-            else void settleTask(task);
-          },
-        },
-      });
+      const scheduler = req.method === "POST" ? openScheduler() : inProcess;
+      return Effect.succeed({ req, ctx: { waitUntil: scheduler.enqueue } });
     },
     (req) => Effect.succeed(req),
     opts,

@@ -14,12 +14,14 @@ import { createApp, H3Event, toWebHandler } from "h3";
 import { setupServer } from "msw/node";
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
   expect,
   expectTypeOf,
   it,
+  onTestFinished,
   vi,
 } from "vitest";
 
@@ -39,6 +41,7 @@ import {
   UTFS_URL,
 } from "../__test-helpers";
 import { UploadedFileData } from "../../src/_internal/shared-schemas";
+import type { RequestContext } from "../../src/next";
 
 vi.mock("next/server", async () => {
   const actual = (await vi.importActual("next/server")) as typeof NextServer;
@@ -315,9 +318,8 @@ describe("adapters:server", async () => {
 });
 
 describe("adapters:next", async () => {
-  const { createUploadthing, createRouteHandler } = await import(
-    "../../src/next"
-  );
+  const nextAdapter = await import("../../src/next");
+  const { createUploadthing, createRouteHandler } = nextAdapter;
   const f = createUploadthing();
 
   beforeEach(() => {
@@ -423,59 +425,11 @@ describe("adapters:next", async () => {
     });
   });
 
-  it("hands ctx.waitUntil to Next.js after", async () => {
-    const task = vi.fn(() => Promise.resolve("deleted"));
-    const handlers = createRouteHandler({
-      router: {
-        background: f({ blob: {} })
-          .middleware((opts) => {
-            opts.ctx.waitUntil(task);
-            return {};
-          })
-          .onUploadComplete(uploadCompleteMock),
-      },
-      config: { token: testToken.encoded },
-    });
+  describe("ctx.waitUntil", () => {
+    const outsideRequestScope = "after was called outside a request scope";
+    const taskFailed = "[uploadthing] ctx.waitUntil task failed.";
 
-    const res = await handlers.POST(
-      new NextRequest(createApiUrl("background", "upload"), {
-        method: "POST",
-        headers: {
-          ...baseHeaders,
-          host: "localhost:3000",
-          "x-forwarded-proto": "http",
-        },
-        body: JSON.stringify({
-          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
-        }),
-      }),
-    );
-
-    expect(res.status).toBe(200);
-    expect(after).toHaveBeenCalledOnce();
-    expect(task).not.toHaveBeenCalled();
-    const flush = vi.mocked(after).mock.calls[0]?.[0];
-    expect(typeof flush).toBe("function");
-    if (typeof flush !== "function") return;
-    await flush();
-    expect(task).toHaveBeenCalledOnce();
-    await flush();
-    expect(task).toHaveBeenCalledOnce();
-  });
-
-  it("hands ctx.waitUntil to Next.js after from onUploadComplete", async () => {
-    const task = vi.fn(() => Promise.resolve("deleted"));
-    const handlers = createRouteHandler({
-      router: {
-        background: f({ blob: {} })
-          .middleware(() => ({}))
-          .onUploadComplete((opts) => {
-            opts.ctx.waitUntil(task);
-          }),
-      },
-      config: { token: testToken.encoded },
-    });
-    const payload = JSON.stringify({
+    const uploadedPayload = JSON.stringify({
       status: "uploaded",
       metadata: {},
       origin: "https://example.com",
@@ -491,227 +445,12 @@ describe("adapters:next", async () => {
         fileHash: "some-md5-hash",
       }),
     });
-    const signature = await Effect.runPromise(
-      signPayload(payload, testToken.decoded.apiKey),
-    );
-
-    const res = await handlers.POST(
-      new NextRequest(createApiUrl("background"), {
-        method: "POST",
-        headers: {
-          "uploadthing-hook": "callback",
-          "x-uploadthing-signature": signature,
-        },
-        body: payload,
-      }),
-    );
-
-    expect(res.status).toBe(200);
-    expect(after).toHaveBeenCalledOnce();
-    expect(task).not.toHaveBeenCalled();
-    const flush = vi.mocked(after).mock.calls[0]?.[0];
-    expect(typeof flush).toBe("function");
-    if (typeof flush !== "function") return;
-    await flush();
-    expect(task).toHaveBeenCalledOnce();
-  });
-
-  it("hands ctx.waitUntil to Next.js after from onUploadError", async () => {
-    const task = vi.fn(() => Promise.resolve("deleted"));
-    const handlers = createRouteHandler({
-      router: {
-        background: f({ blob: {} })
-          .middleware(() => ({}))
-          .onUploadError((opts) => {
-            opts.ctx.waitUntil(task);
-          })
-          .onUploadComplete(uploadCompleteMock),
-      },
-      config: { token: testToken.encoded },
-    });
-    const payload = JSON.stringify({
+    const failedPayload = JSON.stringify({
       fileKey: "some-random-key.png",
       error: "network",
     });
-    const signature = await Effect.runPromise(
-      signPayload(payload, testToken.decoded.apiKey),
-    );
 
-    const res = await handlers.POST(
-      new NextRequest(createApiUrl("background"), {
-        method: "POST",
-        headers: {
-          "uploadthing-hook": "error",
-          "x-uploadthing-signature": signature,
-        },
-        body: payload,
-      }),
-    );
-
-    expect(res.status).toBe(200);
-    expect(after).toHaveBeenCalledOnce();
-    expect(task).not.toHaveBeenCalled();
-    const flush = vi.mocked(after).mock.calls[0]?.[0];
-    expect(typeof flush).toBe("function");
-    if (typeof flush !== "function") return;
-    await flush();
-    expect(task).toHaveBeenCalledOnce();
-  });
-
-  it("runs a detached dev hook once when after already flushed", async () => {
-    vi.mocked(after).mockImplementation((flush) => {
-      if (typeof flush === "function") void flush();
-    });
-    const warnLog = vi
-      .spyOn(console, "warn")
-      .mockImplementation(() => undefined);
-    const task = vi.fn(() => Promise.resolve("deleted"));
-    const handlers = createRouteHandler({
-      router: {
-        background: f({ blob: {} })
-          .middleware(() => ({}))
-          .onUploadComplete((opts) => {
-            opts.ctx.waitUntil(task);
-          }),
-      },
-      config: { token: testToken.encoded, isDev: true },
-    });
-    const payload = JSON.stringify({
-      status: "uploaded",
-      metadata: {},
-      origin: "https://example.com",
-      file: new UploadedFileData({
-        url: `${UTFS_URL}/f/some-random-key.png`,
-        appUrl: `${UTFS_URL}/a/${testToken.decoded.appId}/f/some-random-key.png`,
-        ufsUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
-        name: "foo.png",
-        key: "some-random-key.png",
-        size: 48,
-        type: "image/png",
-        customId: null,
-        fileHash: "some-md5-hash",
-      }),
-    });
-    const signature = await Effect.runPromise(
-      signPayload(payload, testToken.decoded.apiKey),
-    );
-
-    const res = await handlers.POST(
-      new NextRequest(createApiUrl("background"), {
-        method: "POST",
-        headers: {
-          "uploadthing-hook": "callback",
-          "x-uploadthing-signature": signature,
-        },
-        body: payload,
-      }),
-    );
-
-    expect(res.status).toBe(200);
-    await vi.waitUntil(() => task.mock.calls.length > 0);
-    const flush = vi.mocked(after).mock.calls[0]?.[0];
-    expect(typeof flush).toBe("function");
-    if (typeof flush === "function") await flush();
-    expect(task).toHaveBeenCalledOnce();
-    expect(warnLog).not.toHaveBeenCalled();
-    warnLog.mockRestore();
-  });
-
-  it("runs the task once when Next.js after is missing", async () => {
-    const nextServer = await import("next/server");
-    const originalAfter = nextServer.after;
-    Object.defineProperty(nextServer, "after", {
-      configurable: true,
-      value: undefined,
-    });
-    const errorLog = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => undefined);
-    const warnLog = vi
-      .spyOn(console, "warn")
-      .mockImplementation(() => undefined);
-    const unhandled: Array<unknown> = [];
-    const onUnhandled = (reason: unknown) => {
-      unhandled.push(reason);
-    };
-    process.on("unhandledRejection", onUnhandled);
-    const task = vi.fn(() => {
-      throw new Error("boom");
-    });
-    const handlers = createRouteHandler({
-      router: {
-        background: f({ blob: {} })
-          .middleware((opts) => {
-            opts.ctx.waitUntil(task);
-            opts.ctx.waitUntil(Promise.reject(new Error("delete failed")));
-            return {};
-          })
-          .onUploadComplete(uploadCompleteMock),
-      },
-      config: { token: testToken.encoded },
-    });
-
-    const post = () =>
-      handlers.POST(
-        new NextRequest(createApiUrl("background", "upload"), {
-          method: "POST",
-          headers: {
-            ...baseHeaders,
-            host: "localhost:3000",
-            "x-forwarded-proto": "http",
-          },
-          body: JSON.stringify({
-            files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
-          }),
-        }),
-      );
-
-    try {
-      const first = await post();
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      const second = await post();
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      expect(first.status).toBe(200);
-      expect(second.status).toBe(200);
-      expect(task).toHaveBeenCalledTimes(2);
-      expect(unhandled).toEqual([]);
-      expect(errorLog).toHaveBeenCalled();
-      expect(warnLog).toHaveBeenCalledOnce();
-    } finally {
-      Object.defineProperty(nextServer, "after", {
-        configurable: true,
-        value: originalAfter,
-      });
-      process.off("unhandledRejection", onUnhandled);
-      errorLog.mockRestore();
-      warnLog.mockRestore();
-    }
-  });
-
-  it("runs the task once when Next.js after throws", async () => {
-    vi.mocked(after).mockImplementation(() => {
-      throw new Error("after was called outside a request scope");
-    });
-    const errorLog = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => undefined);
-    const task = vi.fn(() => {
-      throw new Error("boom");
-    });
-    const handlers = createRouteHandler({
-      router: {
-        background: f({ blob: {} })
-          .middleware((opts) => {
-            opts.ctx.waitUntil(task);
-            return {};
-          })
-          .onUploadComplete(uploadCompleteMock),
-      },
-      config: { token: testToken.encoded },
-    });
-
-    const res = await handlers.POST(
+    const uploadRequest = () =>
       new NextRequest(createApiUrl("background", "upload"), {
         method: "POST",
         headers: {
@@ -722,13 +461,224 @@ describe("adapters:next", async () => {
         body: JSON.stringify({
           files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
         }),
-      }),
+      });
+
+    const hookRequest = async (hook: "callback" | "error", payload: string) =>
+      new NextRequest(createApiUrl("background"), {
+        method: "POST",
+        headers: {
+          "uploadthing-hook": hook,
+          "x-uploadthing-signature": await Effect.runPromise(
+            signPayload(payload, testToken.decoded.apiKey),
+          ),
+        },
+        body: payload,
+      });
+
+    /** Every hook on the route schedules the same work. */
+    const handlersFor = (
+      schedule: (waitUntil: RequestContext["waitUntil"]) => void,
+      { adapter = nextAdapter, isDev = false } = {},
+    ) => {
+      const route = adapter.createUploadthing();
+      return adapter.createRouteHandler({
+        router: {
+          background: route({ blob: {} })
+            .middleware(({ ctx }) => {
+              schedule(ctx.waitUntil);
+              return {};
+            })
+            .onUploadError(({ ctx }) => schedule(ctx.waitUntil))
+            .onUploadComplete(({ ctx }) => schedule(ctx.waitUntil)),
+        },
+        config: { token: testToken.encoded, isDev },
+      });
+    };
+
+    /** Stands in for Next.js running `after` callbacks once the response ends. */
+    const endResponse = () =>
+      Promise.all(
+        vi
+          .mocked(after)
+          .mock.calls.map(([task]) =>
+            typeof task === "function" ? task() : task,
+          ),
+      );
+
+    /**
+     * The one-time warning is module state, so tests that assert on it load a
+     * fresh adapter. The `next/server` mock stays shared across the reset.
+     */
+    const loadFreshAdapter = () => {
+      vi.resetModules();
+      return import("../../src/next");
+    };
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("registers with after before POST first awaits", async () => {
+      const task = vi.fn();
+      const handlers = handlersFor((waitUntil) => waitUntil(task));
+      let inPostCall = false;
+      vi.mocked(after).mockImplementation(() => {
+        if (!inPostCall) throw new Error(outsideRequestScope);
+      });
+
+      inPostCall = true;
+      const pending = handlers.POST(uploadRequest());
+      inPostCall = false;
+
+      expect((await pending).status).toBe(200);
+      expect(task).not.toHaveBeenCalled();
+      await endResponse();
+      expect(task).toHaveBeenCalledOnce();
+    });
+
+    it.each([
+      { hook: "callback", payload: uploadedPayload },
+      { hook: "error", payload: failedPayload },
+    ] as const)(
+      "runs $hook hook tasks once the response ends",
+      async ({ hook, payload }) => {
+        const task = vi.fn();
+        const handlers = handlersFor((waitUntil) => waitUntil(task));
+
+        const res = await handlers.POST(await hookRequest(hook, payload));
+
+        expect(res.status).toBe(200);
+        expect(task).not.toHaveBeenCalled();
+        await endResponse();
+        expect(task).toHaveBeenCalledOnce();
+      },
     );
 
-    expect(res.status).toBe(200);
-    expect(task).toHaveBeenCalledOnce();
-    expect(errorLog).toHaveBeenCalled();
-    errorLog.mockRestore();
+    it("contains failures, including promises that reject before the response ends", async () => {
+      const errorLog = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => undefined);
+      const unhandled: Array<unknown> = [];
+      const collect = (reason: unknown) => void unhandled.push(reason);
+      process.on("unhandledRejection", collect);
+      onTestFinished(() => void process.off("unhandledRejection", collect));
+      const handlers = handlersFor((waitUntil) => {
+        waitUntil(Promise.reject(new Error("delete failed")));
+        waitUntil(() => {
+          throw new Error("boom");
+        });
+      });
+
+      const res = await handlers.POST(uploadRequest());
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await endResponse();
+
+      expect(res.status).toBe(200);
+      expect(unhandled).toEqual([]);
+      expect(errorLog).toHaveBeenCalledWith(
+        taskFailed,
+        expect.objectContaining({ message: "delete failed" }),
+      );
+      expect(errorLog).toHaveBeenCalledWith(
+        taskFailed,
+        expect.objectContaining({ message: "boom" }),
+      );
+    });
+
+    it("keeps the flush open for tasks queued while it runs", async () => {
+      const finished = vi.fn();
+      const handlers = handlersFor((waitUntil) =>
+        waitUntil(() =>
+          waitUntil(() =>
+            new Promise((resolve) => setTimeout(resolve, 0)).then(finished),
+          ),
+        ),
+      );
+
+      const res = await handlers.POST(uploadRequest());
+      await endResponse();
+
+      expect(res.status).toBe(200);
+      expect(finished).toHaveBeenCalledOnce();
+    });
+
+    it("runs a development hook that outlives the response once, without warning", async () => {
+      const adapter = await loadFreshAdapter();
+      vi.mocked(after).mockImplementation((flush) => {
+        if (typeof flush === "function") void flush();
+      });
+      const warnLog = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => undefined);
+      const task = vi.fn();
+      const handlers = handlersFor((waitUntil) => waitUntil(task), {
+        adapter,
+        isDev: true,
+      });
+
+      const res = await handlers.POST(
+        await hookRequest("callback", uploadedPayload),
+      );
+      await vi.waitUntil(() => task.mock.calls.length > 0);
+      await endResponse();
+
+      expect(res.status).toBe(200);
+      expect(task).toHaveBeenCalledOnce();
+      expect(warnLog).not.toHaveBeenCalled();
+    });
+
+    it("warns once and runs each task in-process when after is missing", async () => {
+      const adapter = await loadFreshAdapter();
+      const nextServer = await import("next/server");
+      const mockedAfter = nextServer.after;
+      Object.defineProperty(nextServer, "after", {
+        configurable: true,
+        value: undefined,
+      });
+      onTestFinished(() => {
+        Object.defineProperty(nextServer, "after", {
+          configurable: true,
+          value: mockedAfter,
+        });
+      });
+      const warnLog = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => undefined);
+      const task = vi.fn();
+      const handlers = handlersFor((waitUntil) => waitUntil(task), {
+        adapter,
+      });
+
+      const responses = [
+        await handlers.POST(uploadRequest()),
+        await handlers.POST(uploadRequest()),
+      ];
+
+      expect(responses.map((res) => res.status)).toEqual([200, 200]);
+      expect(task).toHaveBeenCalledTimes(2);
+      expect(warnLog).toHaveBeenCalledOnce();
+    });
+
+    it("runs the task once when after throws, even if it kept the callback", async () => {
+      const adapter = await loadFreshAdapter();
+      vi.mocked(after).mockImplementation(() => {
+        throw new Error(outsideRequestScope);
+      });
+      const warnLog = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => undefined);
+      const task = vi.fn();
+      const handlers = handlersFor((waitUntil) => waitUntil(task), {
+        adapter,
+      });
+
+      const res = await handlers.POST(uploadRequest());
+      await endResponse();
+
+      expect(res.status).toBe(200);
+      expect(task).toHaveBeenCalledOnce();
+      expect(warnLog).toHaveBeenCalledOnce();
+    });
   });
 });
 
