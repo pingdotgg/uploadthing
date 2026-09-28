@@ -29,9 +29,11 @@ export type RequestContext = {
   /**
    * Schedule work that should not delay the client callback.
    *
-   * The task is handed to Next.js `after`. `onUploadComplete` can return
-   * `serverData` without awaiting the task, and Next.js keeps the invocation
-   * alive until the task settles. Requires Next.js 15.
+   * On Next.js 15.1 or later, the task is handed to `after` while the request
+   * is still open. `onUploadComplete` can return `serverData` without awaiting
+   * the task, and Next.js keeps the invocation alive until the task settles.
+   * Earlier versions start the task and warn once. In development, callback
+   * hooks run after the response, so those tasks start in-process.
    */
   waitUntil: (task: AfterTask) => void;
 };
@@ -43,41 +45,83 @@ const warnTaskMayFreeze = (): void => {
   didWarnMissingAfter = true;
   // eslint-disable-next-line no-console
   console.warn(
-    "[uploadthing] ctx.waitUntil could not register with Next.js after. The task was started, but a serverless function may freeze it when the response ends.",
+    "[uploadthing] ctx.waitUntil could not register with Next.js after. The task was started, but a serverless function may freeze it when the response ends. Requires Next.js 15.1 or later for the task to outlive the response.",
   );
 };
 
-/** Run a task outside Next.js `after`. Failures stay in the background. */
-const runTask = (task: AfterTask): void => {
+/** Failures stay off the upload hook, including when `after` runs the task. */
+const settleTask = (task: AfterTask): Promise<void> => {
   try {
     const pending = typeof task === "function" ? task() : task;
-    void Promise.resolve(pending).catch((error: unknown) => {
-      // eslint-disable-next-line no-console
-      console.error("[uploadthing] ctx.waitUntil task failed.", error);
-    });
+    return Promise.resolve(pending).then(
+      () => undefined,
+      (error: unknown) => {
+        // eslint-disable-next-line no-console
+        console.error("[uploadthing] ctx.waitUntil task failed.", error);
+      },
+    );
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("[uploadthing] ctx.waitUntil task failed.", error);
+    return Promise.resolve();
   }
 };
 
-const scheduleAfterResponse = (task: AfterTask): void => {
-  const after = (NextServer as { after?: (task: AfterTask) => void }).after;
-  if (typeof after === "function") {
+type RequestScheduler = {
+  enqueue: (task: AfterTask) => void;
+};
+
+/**
+ * `after` reads the request store at call time. Hooks run later, sometimes
+ * after that store is gone, so the queue is opened here and hooks only enqueue.
+ */
+const openScheduler = (): RequestScheduler => {
+  const tasks: Array<AfterTask> = [];
+  let sealed = false;
+  let failed = false;
+
+  const flush = (): Promise<void> => {
+    sealed = true;
+    const batch = tasks.splice(0, tasks.length);
+    return Promise.all(batch.map(settleTask)).then(() => undefined);
+  };
+
+  if (typeof NextServer.after === "function") {
     try {
-      after(task);
-      return;
+      NextServer.after(flush);
     } catch {
-      // `after` throws outside the request scope. In development the callback
-      // fiber can outlive that scope, so the task still has to run.
-      warnTaskMayFreeze();
+      // Thrown before registration. Leave `flush` uncalled so the task runs once.
+      failed = true;
+      sealed = true;
     }
   } else {
-    warnTaskMayFreeze();
+    failed = true;
+    sealed = true;
   }
 
-  runTask(task);
+  return {
+    enqueue(task) {
+      if (failed) {
+        warnTaskMayFreeze();
+        void settleTask(task);
+        return;
+      }
+      if (sealed) {
+        // Development detaches callback hooks after the response. `after`
+        // already ran, and the dev server still finishes the task.
+        void settleTask(task);
+        return;
+      }
+      tasks.push(task);
+    },
+  };
 };
+
+/**
+ * Set for the synchronous start of `POST`, then captured into adapter args.
+ * Cleared before the handler awaits so concurrent requests do not share it.
+ */
+let requestScheduler: RequestScheduler | undefined;
 
 type AdapterArgs = {
   req: NextRequest;
@@ -92,14 +136,31 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
   const handler = makeAdapterHandler<[NextRequest], AdapterArgs>(
-    (req) =>
-      Effect.succeed({
+    (req) => {
+      const scheduler = requestScheduler;
+      return Effect.succeed({
         req,
-        ctx: { waitUntil: scheduleAfterResponse },
-      }),
+        ctx: {
+          waitUntil: (task) => {
+            if (scheduler) scheduler.enqueue(task);
+            else void settleTask(task);
+          },
+        },
+      });
+    },
     (req) => Effect.succeed(req),
     opts,
     "nextjs-app",
   );
-  return { POST: handler, GET: handler };
+
+  const POST = (req: NextRequest) => {
+    requestScheduler = openScheduler();
+    try {
+      return handler(req);
+    } finally {
+      requestScheduler = undefined;
+    }
+  };
+
+  return { POST, GET: handler };
 };

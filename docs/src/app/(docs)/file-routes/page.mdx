@@ -304,8 +304,10 @@ properties:
     `ctx.waitUntil` schedules work with Next.js
     [`after`](https://nextjs.org/docs/app/api-reference/functions/after), so the
     client receives this function's return value without waiting for that work.
-    Requires Next.js 15. The same `ctx` is passed to `middleware` and
-    `onUploadError`.
+    On Next.js 15.1 or later, that work stays alive after the response. Earlier
+    versions start the task and warn once. In development, callback hooks run
+    after the response, so those tasks start in-process. The same `ctx` is
+    passed to `middleware` and `onUploadError`.
   </Property>
 </Properties>
 
@@ -322,6 +324,6 @@ f(["image"])
   })
   .onUploadComplete(async ({ metadata, ctx }) => {
     ctx.waitUntil(utapi.deleteFiles(metadata.oldFileKey));
-    return { deletedPrevious: true };
+    return { deletionScheduled: true };
   });
 ```
