@@ -117,12 +117,6 @@ const openScheduler = (): RequestScheduler => {
   };
 };
 
-/**
- * Set for the synchronous start of `POST`, then captured into adapter args.
- * Cleared before the handler awaits so concurrent requests do not share it.
- */
-let requestScheduler: RequestScheduler | undefined;
-
 type AdapterArgs = {
   req: NextRequest;
   ctx: RequestContext;
@@ -137,7 +131,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
 ) => {
   const handler = makeAdapterHandler<[NextRequest], AdapterArgs>(
     (req) => {
-      const scheduler = requestScheduler;
+      // Built eagerly, while the route handler still holds the request scope.
+      const scheduler = req.method === "POST" ? openScheduler() : undefined;
       return Effect.succeed({
         req,
         ctx: {
@@ -152,15 +147,5 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     opts,
     "nextjs-app",
   );
-
-  const POST = (req: NextRequest) => {
-    requestScheduler = openScheduler();
-    try {
-      return handler(req);
-    } finally {
-      requestScheduler = undefined;
-    }
-  };
-
-  return { POST, GET: handler };
+  return { POST: handler, GET: handler };
 };
