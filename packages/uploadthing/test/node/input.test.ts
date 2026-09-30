@@ -1,4 +1,4 @@
-import { ParseError } from "effect/ParseResult";
+import { SchemaError } from "effect/Schema";
 import * as Schema from "effect/Schema";
 import * as v from "valibot";
 import { expect, expectTypeOf, it } from "vitest";
@@ -91,7 +91,7 @@ it("validation fails when input is invalid (effect/schema)", async () => {
   const fileRoute = f(["image"]).input(Schema.String).onUploadComplete(noop);
   const err = await getParseFn(fileRoute.inputParser)(123).catch((e) => e);
   expect(err).toBeInstanceOf(ParserError);
-  expect(err.cause).toBeInstanceOf(ParseError);
+  expect(err.cause).toBeInstanceOf(SchemaError);
 });
 
 it("with data transforming (zod)", async () => {
@@ -162,7 +162,7 @@ it("with data transforming (effect/schema)", async () => {
   const fileRoute = f(["image"])
     .input(
       Schema.Struct({
-        date: Schema.Date,
+        date: Schema.DateFromString,
       }),
     )
     .middleware((opts) => {
@@ -201,7 +201,7 @@ it("type errors for non-JSON data types (valibot)", () => {
 it("type errors for non-JSON data types (effect/schema)", () => {
   f(["image"])
     // @ts-expect-error - Set is not a valid JSON type
-    .input(Schema.Struct({ foo: Schema.Set(Schema.String) }))
+    .input(Schema.Struct({ foo: Schema.ReadonlySet(Schema.String) }))
     .middleware(() => {
       return {};
     })

@@ -1,6 +1,6 @@
+import * as Effect from "effect/Effect";
 import * as Encoding from "effect/Encoding";
 import * as Hash from "effect/Hash";
-import * as Micro from "effect/Micro";
 import * as Redacted from "effect/Redacted";
 import SQIds, { defaultOptions } from "sqids";
 
@@ -32,8 +32,8 @@ export const signPayload = (
   payload: string,
   secret: Redacted.Redacted<string>,
 ) =>
-  Micro.gen(function* () {
-    const signingKey = yield* Micro.tryPromise({
+  Effect.gen(function* () {
+    const signingKey = yield* Effect.tryPromise({
       try: () =>
         crypto.subtle.importKey(
           "raw",
@@ -50,8 +50,8 @@ export const signPayload = (
         }),
     });
 
-    const signature = yield* Micro.map(
-      Micro.tryPromise({
+    const signature = yield* Effect.map(
+      Effect.tryPromise({
         try: () =>
           crypto.subtle.sign(algorithm, signingKey, encoder.encode(payload)),
         catch: (e) => new UploadThingError({ code: "BAD_REQUEST", cause: e }),
@@ -60,30 +60,30 @@ export const signPayload = (
     );
 
     return `${signaturePrefix}${signature}`;
-  }).pipe(Micro.withTrace("signPayload"));
+  }).pipe(Effect.withSpan("signPayload"));
 
 export const verifySignature = (
   payload: string,
   signature: string | null,
   secret: Redacted.Redacted<string>,
 ) =>
-  Micro.gen(function* () {
+  Effect.gen(function* () {
     const sig = signature?.slice(signaturePrefix.length);
     if (!sig) return false;
 
     const secretBytes = encoder.encode(Redacted.value(secret));
-    const signingKey = yield* Micro.promise(() =>
+    const signingKey = yield* Effect.promise(() =>
       crypto.subtle.importKey("raw", secretBytes, algorithm, false, ["verify"]),
     );
 
-    const sigBytes = yield* Micro.fromEither(Encoding.decodeHex(sig));
+    const sigBytes = yield* Effect.fromResult(Encoding.decodeHex(sig));
     const payloadBytes = encoder.encode(payload);
-    return yield* Micro.promise(() =>
+    return yield* Effect.promise(() =>
       crypto.subtle.verify(algorithm, signingKey, sigBytes, payloadBytes),
     );
   }).pipe(
-    Micro.withTrace("verifySignature"),
-    Micro.orElseSucceed(() => false),
+    Effect.withSpan("verifySignature"),
+    Effect.orElseSucceed(() => false),
   );
 
 export const generateKey = (
@@ -92,7 +92,7 @@ export const generateKey = (
   getHashParts?: ExtractHashPartsFn,
   hashFn?: HashFn,
 ) =>
-  Micro.sync(() => {
+  Effect.sync(() => {
     // Get the parts of which we should hash to constuct the key
     // This allows the user to customize the hashing algorithm
     // If they for example want to generate the same key for the
@@ -120,11 +120,11 @@ export const generateKey = (
 
     // Concatenate them
     return encodedAppId + encodedFileSeed;
-  }).pipe(Micro.withTrace("generateKey"));
+  }).pipe(Effect.withSpan("generateKey"));
 
 // Verify that the key was generated with the same appId
 export const verifyKey = (key: string, appId: string) =>
-  Micro.sync(() => {
+  Effect.sync(() => {
     const alphabet = shuffle(defaultOptions.alphabet, appId);
     const expectedPrefix = new SQIds({ alphabet, minLength: 12 }).encode([
       Math.abs(Hash.string(appId)),
@@ -132,8 +132,8 @@ export const verifyKey = (key: string, appId: string) =>
 
     return key.startsWith(expectedPrefix);
   }).pipe(
-    Micro.withTrace("verifyKey"),
-    Micro.orElseSucceed(() => false),
+    Effect.withSpan("verifyKey"),
+    Effect.orElseSucceed(() => false),
   );
 
 export const generateSignedURL = (
@@ -144,7 +144,7 @@ export const generateSignedURL = (
     data?: Record<string, string | number | boolean | null | undefined>;
   },
 ) =>
-  Micro.gen(function* () {
+  Effect.gen(function* () {
     const parsedURL = new URL(url);
 
     const ttl = opts.ttlInSeconds
@@ -166,4 +166,4 @@ export const generateSignedURL = (
     parsedURL.searchParams.append("signature", signature);
 
     return parsedURL.href;
-  }).pipe(Micro.withTrace("generateSignedURL"));
+  }).pipe(Effect.withSpan("generateSignedURL"));

@@ -270,8 +270,7 @@ describe("uploadFilesFromUrl", () => {
       error: {
         code: "BAD_REQUEST",
         data: expect.objectContaining({
-          _tag: "ResponseError",
-          description: "non 2xx status code",
+          _tag: "HttpClientError",
         }),
         message:
           "Failed to download requested file: StatusCode: non 2xx status code (404 GET https://cdn.foo.com/does-not-exist.txt)",
@@ -313,8 +312,7 @@ describe("uploadFilesFromUrl", () => {
         error: {
           code: "BAD_REQUEST",
           data: expect.objectContaining({
-            _tag: "ResponseError",
-            description: "non 2xx status code",
+            _tag: "HttpClientError",
           }),
           message:
             "Failed to download requested file: StatusCode: non 2xx status code (404 GET https://cdn.foo.com/does-not-exist.txt)",

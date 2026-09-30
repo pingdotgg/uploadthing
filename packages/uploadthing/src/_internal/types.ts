@@ -1,5 +1,3 @@
-import type { Schema } from "effect/Schema";
-
 import type {
   ErrorMessage,
   FileRouterInputConfig,
@@ -81,7 +79,7 @@ type MiddlewareFn<
   TArgs extends Record<string, unknown>,
 > = (
   opts: TArgs & {
-    files: Schema.Type<typeof UploadActionPayload>["files"];
+    files: (typeof UploadActionPayload.Type)["files"];
     input: TInput extends UnsetMarker ? undefined : TInput;
   },
 ) => MaybePromise<TOutput>;

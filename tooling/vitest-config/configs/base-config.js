@@ -1,5 +1,4 @@
 import { existsSync, readdirSync } from "fs";
-import { defineConfig, mergeConfig } from "vitest/config";
 
 /**
  *
@@ -29,10 +28,12 @@ const aliases = readdirSync(pkgRoot(""))
     }),
   );
 
-export const baseConfig = defineConfig({
+/** @type {import("vitest/config").ViteUserConfig} */
+export const baseConfig = {
   test: {
     silent: "passed-only",
     mockReset: true,
+    setupFiles: [new URL("./setup-effect.js", import.meta.url).pathname],
     coverage: {
       provider: "istanbul",
       reporter: [
@@ -47,4 +48,4 @@ export const baseConfig = defineConfig({
     },
   },
   resolve: { alias: aliases },
-});
+};

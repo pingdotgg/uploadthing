@@ -1,4 +1,4 @@
-import * as Micro from "effect/Micro";
+import * as Data from "effect/Data";
 import * as Predicate from "effect/Predicate";
 
 import type { Json } from "./types";
@@ -59,7 +59,7 @@ export interface SerializedUploadThingError {
 
 export class UploadThingError<
   TShape extends Json = { message: string },
-> extends Micro.Error<{ message: string }> {
+> extends Data.Error<{ message: string }> {
   readonly _tag = "UploadThingError";
   readonly name = "UploadThingError";
 
@@ -81,7 +81,7 @@ export class UploadThingError<
     if (opts.cause instanceof Error) {
       this.cause = opts.cause;
     } else if (
-      Predicate.isRecord(opts.cause) &&
+      Predicate.isObject(opts.cause) &&
       Predicate.isNumber(opts.cause.status) &&
       Predicate.isString(opts.cause.statusText)
     ) {

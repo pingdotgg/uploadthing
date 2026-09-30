@@ -1,3 +1,4 @@
+import { playwright } from "@vitest/browser-playwright";
 import { defineConfig, mergeConfig } from "vitest/config";
 
 import { baseConfig } from "@uploadthing/vitest-config/base";
@@ -9,7 +10,7 @@ export default mergeConfig(
       name: "browser",
       browser: {
         instances: [{ browser: "chromium" }],
-        provider: "playwright",
+        provider: playwright(),
         enabled: true,
       },
     },

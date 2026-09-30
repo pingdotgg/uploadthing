@@ -159,14 +159,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/platform": "0.96.0",
     "@standard-schema/spec": "1.0.0-beta.4",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "effect": "3.21.0"
+    "effect": "4.0.0-rc.110"
   },
   "devDependencies": {
-    "@effect/vitest": "0.29.0",
+    "@effect/vitest": "4.0.0-rc.110",
     "@remix-run/server-runtime": "^2.12.0",
     "@types/body-parser": "^1.19.5",
     "@types/express": "^5.0.0",
@@ -175,7 +174,8 @@
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "@uploadthing/vitest-config": "workspace:*",
-    "@vitest/coverage-istanbul": "3.2.4",
+    "@vitest/browser-playwright": "4.1.10",
+    "@vitest/coverage-istanbul": "4.1.10",
     "body-parser": "^1.20.2",
     "eslint": "9.25.1",
     "express": "^5.0.1",
@@ -188,7 +188,7 @@
     "tsdown": "0.14.1",
     "typescript": "5.8.3",
     "valibot": "1.0.0-beta.9",
-    "vitest": "3.2.4",
+    "vitest": "4.1.10",
     "vue": "^3.4.21",
     "wait-on": "^8.0.1",
     "zod": "^3.24.1"

@@ -1,4 +1,10 @@
-import { defaultExclude, defineConfig, mergeConfig } from "vitest/config";
+import { playwright } from "@vitest/browser-playwright";
+import {
+  defaultExclude,
+  defineConfig,
+  defineProject,
+  mergeConfig,
+} from "vitest/config";
 
 import { baseConfig } from "@uploadthing/vitest-config/base";
 
@@ -6,10 +12,10 @@ export default mergeConfig(
   baseConfig,
   defineConfig({
     test: {
-      workspace: [
+      projects: [
         mergeConfig(
           baseConfig,
-          defineConfig({
+          defineProject({
             test: {
               include: ["test/node/**/*.test.{ts,tsx}"],
               exclude: [...defaultExclude, "test/browser/**"],
@@ -20,14 +26,14 @@ export default mergeConfig(
         ),
         mergeConfig(
           baseConfig,
-          defineConfig({
+          defineProject({
             test: {
               include: ["test/browser/**/*.test.{ts,tsx}"],
               exclude: [...defaultExclude, "test/node/**"],
               name: "browser",
               browser: {
                 instances: [{ browser: "chromium" }],
-                provider: "playwright",
+                provider: playwright(),
                 enabled: true,
               },
             },

@@ -3,12 +3,14 @@ import * as S from "effect/Schema";
 import * as Stream from "effect/Stream";
 
 export const handleJsonLineStream =
-  <TChunk>(
-    schema: S.Schema<TChunk>,
-    onChunk: (chunk: TChunk) => Effect.Effect<void>,
+  <TChunk extends S.Top>(
+    schema: TChunk,
+    onChunk: (chunk: TChunk["Type"]) => Effect.Effect<void>,
   ) =>
   <E, R>(stream: Stream.Stream<Uint8Array, E, R>) => {
     let buf = "";
+
+    const decodeChunks = S.decodeUnknownEffect(S.Array(schema));
 
     return stream.pipe(
       Stream.decodeText(),
@@ -40,7 +42,7 @@ export const handleJsonLineStream =
           return validChunks;
         }),
       ),
-      Stream.mapEffect(S.decodeUnknown(S.Array(schema))),
+      Stream.mapEffect((chunks) => decodeChunks(chunks)),
       Stream.mapEffect(Effect.forEach((part) => onChunk(part))),
       Stream.runDrain,
       Effect.withLogSpan("handleJsonLineStream"),

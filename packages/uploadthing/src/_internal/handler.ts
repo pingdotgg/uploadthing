@@ -1,18 +1,17 @@
-import * as HttpApp from "@effect/platform/HttpApp";
-import * as HttpBody from "@effect/platform/HttpBody";
-import * as HttpClient from "@effect/platform/HttpClient";
-import type * as HttpClientError from "@effect/platform/HttpClientError";
-import * as HttpClientRequest from "@effect/platform/HttpClientRequest";
-import * as HttpClientResponse from "@effect/platform/HttpClientResponse";
-import * as HttpRouter from "@effect/platform/HttpRouter";
-import * as HttpServerRequest from "@effect/platform/HttpServerRequest";
-import * as HttpServerResponse from "@effect/platform/HttpServerResponse";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
-import * as Match from "effect/Match";
+import * as Fiber from "effect/Fiber";
 import * as Redacted from "effect/Redacted";
 import * as Schema from "effect/Schema";
+import * as HttpBody from "effect/unstable/http/HttpBody";
+import * as HttpClient from "effect/unstable/http/HttpClient";
+import type * as HttpClientError from "effect/unstable/http/HttpClientError";
+import * as HttpClientRequest from "effect/unstable/http/HttpClientRequest";
+import * as HttpClientResponse from "effect/unstable/http/HttpClientResponse";
+import * as HttpEffect from "effect/unstable/http/HttpEffect";
+import * as HttpServerRequest from "effect/unstable/http/HttpServerRequest";
+import * as HttpServerResponse from "effect/unstable/http/HttpServerResponse";
 
 import {
   fillInputRouteConfig,
@@ -47,9 +46,27 @@ import {
 import { UTFiles, UTRegion } from "./types";
 import type { AnyFileRoute, UTEvents } from "./types";
 
-export class AdapterArguments extends Context.Tag(
-  "uploadthing/AdapterArguments",
-)<AdapterArguments, Record<string, unknown>>() {}
+export class AdapterArguments extends Context.Service<
+  AdapterArguments,
+  Record<string, unknown>
+>()("uploadthing/AdapterArguments") {}
+
+/**
+ * Ignore the failure of an effect, logging any errors that occur.
+ * Effect v4 removed `Effect.ignoreLogged`, this is a drop-in replacement.
+ */
+const ignoreLogged = <A, E, R>(
+  effect: Effect.Effect<A, E, R>,
+): Effect.Effect<void, never, R> =>
+  effect.pipe(
+    Effect.catchCause((cause) =>
+      Effect.logDebug(
+        "An error was silently ignored because it is not anticipated to be useful",
+        cause,
+      ),
+    ),
+    Effect.asVoid,
+  );
 
 /**
  * Create a request handler adapter for any framework or server library.
@@ -76,27 +93,30 @@ export const makeAdapterHandler = <
     opts.config?.fetch as typeof globalThis.fetch,
     opts.config,
   );
-  const handle = Effect.promise(() =>
-    managed.runtime().then(HttpApp.toWebHandlerRuntime),
-  );
-
-  const app = (...args: Args) =>
-    Effect.map(
-      Effect.promise(() =>
-        managed.runPromise(createRequestHandler(opts, beAdapter ?? "custom")),
-      ),
-      Effect.provideServiceEffect(AdapterArguments, makeAdapterArgs(...args)),
-    );
 
   return async (...args: Args) => {
-    const result = await handle.pipe(
-      Effect.ap(app(...args)),
-      Effect.ap(toRequest(...args)),
-      Effect.withLogSpan("requestHandler"),
-      managed.runPromise,
+    const context = await managed.context();
+    const [app, request] = await managed.runPromise(
+      Effect.all([
+        Effect.map(
+          createRequestHandler(opts, beAdapter ?? "custom"),
+          Effect.provideServiceEffect(
+            AdapterArguments,
+            makeAdapterArgs(...args),
+          ),
+        ),
+        toRequest(...args),
+      ]),
     );
 
-    return result;
+    const handler = HttpEffect.toWebHandler(
+      app.pipe(
+        Effect.withLogSpan("requestHandler"),
+        Effect.provideContext(context),
+      ),
+    );
+
+    return handler(request);
   };
 };
 
@@ -132,12 +152,12 @@ export const createRequestHandler = <TRouter extends FileRouter>(
         "x-uploadthing-version": clientVersion,
       } = yield* HttpServerRequest.schemaHeaders(
         Schema.Struct({
-          "uploadthing-hook": UploadThingHook.pipe(Schema.optional),
+          "uploadthing-hook": Schema.optional(UploadThingHook),
           "x-uploadthing-package": Schema.String.pipe(
-            Schema.optionalWith({ default: () => "unknown" }),
+            Schema.withDecodingDefault(Effect.succeed("unknown")),
           ),
           "x-uploadthing-version": Schema.String.pipe(
-            Schema.optionalWith({ default: () => pkgJson.version }),
+            Schema.withDecodingDefault(Effect.succeed(pkgJson.version)),
           ),
         }),
       );
@@ -149,12 +169,16 @@ export const createRequestHandler = <TRouter extends FileRouter>(
         ).pipe(Effect.annotateLogs({ clientVersion, serverVersion }));
       }
 
-      const { slug, actionType } = yield* HttpRouter.schemaParams(
+      const serverRequest = yield* HttpServerRequest.HttpServerRequest;
+      const requestUrl = yield* Effect.fromOption(
+        HttpServerRequest.toURL(serverRequest),
+      );
+      const { slug, actionType } = yield* Schema.decodeUnknownEffect(
         Schema.Struct({
-          actionType: ActionType.pipe(Schema.optional),
+          actionType: Schema.optional(ActionType),
           slug: Schema.String,
         }),
-      );
+      )(HttpServerRequest.searchParamsFromURL(requestUrl));
 
       const uploadable = opts.router[slug];
       if (!uploadable) {
@@ -166,26 +190,19 @@ export const createRequestHandler = <TRouter extends FileRouter>(
         });
       }
 
-      const { body, fiber } = yield* Match.value({
-        actionType,
-        uploadthingHook,
-      }).pipe(
-        Match.when({ actionType: "upload", uploadthingHook: undefined }, () =>
-          handleUploadAction({
+      const { body, fiber } = yield* actionType === "upload" &&
+      uploadthingHook === undefined
+        ? handleUploadAction({
             uploadable,
             fePackage,
             beAdapter,
             slug,
-          }),
-        ),
-        Match.when({ actionType: undefined, uploadthingHook: "callback" }, () =>
-          handleCallbackRequest({ uploadable, fePackage, beAdapter }),
-        ),
-        Match.when({ actionType: undefined, uploadthingHook: "error" }, () =>
-          handleErrorRequest({ uploadable }),
-        ),
-        Match.orElse(() => Effect.succeed({ body: null, fiber: null })),
-      );
+          })
+        : actionType === undefined && uploadthingHook === "callback"
+          ? handleCallbackRequest({ uploadable, fePackage, beAdapter })
+          : actionType === undefined && uploadthingHook === "error"
+            ? handleErrorRequest({ uploadable })
+            : Effect.succeed({ body: null, fiber: null });
 
       if (fiber) {
         yield* Effect.logDebug("Running fiber as daemon").pipe(
@@ -194,9 +211,9 @@ export const createRequestHandler = <TRouter extends FileRouter>(
         if (handleDaemon === "void") {
           // noop
         } else if (handleDaemon === "await") {
-          yield* fiber.await;
+          yield* Fiber.await(fiber);
         } else if (typeof handleDaemon === "function") {
-          handleDaemon(Effect.runPromise(fiber.await));
+          handleDaemon(Effect.runPromise(Fiber.await(fiber)));
         }
       }
 
@@ -207,7 +224,7 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       return yield* HttpServerResponse.json(body);
     }).pipe(
       Effect.catchTags({
-        ParseError: (e) =>
+        SchemaError: (e) =>
           HttpServerResponse.json(
             formatError(
               new UploadThingError({
@@ -227,14 +244,23 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       }),
     );
 
-    const appendResponseHeaders = Effect.map(
-      HttpServerResponse.setHeader("x-uploadthing-version", pkgJson.version),
-    );
-
-    return HttpRouter.empty.pipe(
-      HttpRouter.get("*", GET),
-      HttpRouter.post("*", POST),
-      HttpRouter.use(appendResponseHeaders),
+    return Effect.gen(function* () {
+      const request = yield* HttpServerRequest.HttpServerRequest;
+      switch (request.method) {
+        case "GET": {
+          return yield* GET;
+        }
+        case "POST": {
+          return yield* POST;
+        }
+        default: {
+          return HttpServerResponse.empty({ status: 404 });
+        }
+      }
+    }).pipe(
+      Effect.map(
+        HttpServerResponse.setHeader("x-uploadthing-version", pkgJson.version),
+      ),
     );
   }).pipe(Effect.withLogSpan("createRequestHandler"));
 
@@ -292,7 +318,7 @@ const handleErrorRequest = (opts: { uploadable: AnyFileRoute }) =>
           ).pipe(Effect.annotateLogs("error", error)),
         ),
       )
-      .pipe(Effect.ignoreLogged, Effect.forkDaemon);
+      .pipe(ignoreLogged, Effect.forkDetach);
 
     return {
       body: null,
@@ -328,7 +354,7 @@ const handleCallbackRequest = (opts: {
         status: Schema.String,
         file: UploadedFileData,
         origin: Schema.String,
-        metadata: Schema.Record({ key: Schema.String, value: Schema.Unknown }),
+        metadata: Schema.Record(Schema.String, Schema.Unknown),
       }),
     );
     yield* Effect.logDebug("Handling callback request with input:").pipe(
@@ -399,9 +425,8 @@ const handleCallbackRequest = (opts: {
           HttpClientResponse.schemaBodyJson(CallbackResultResponse),
         ),
         Effect.tap(Effect.log("Sent callback result to UploadThing")),
-        Effect.scoped,
       );
-    }).pipe(Effect.ignoreLogged, Effect.forkDaemon);
+    }).pipe(ignoreLogged, Effect.forkDetach);
 
     return { body: null, fiber };
   }).pipe(Effect.withLogSpan("handleCallbackRequest"));
@@ -603,7 +628,9 @@ const handleUploadAction = (opts: {
     );
 
     const serverReq = yield* HttpServerRequest.HttpServerRequest;
-    const requestUrl = yield* HttpServerRequest.toURL(serverReq);
+    const requestUrl = yield* Effect.fromOption(
+      HttpServerRequest.toURL(serverReq),
+    );
 
     const devHookRequest = yield* Config.string("callbackUrl").pipe(
       Config.withDefault(requestUrl.origin + requestUrl.pathname),
@@ -634,13 +661,13 @@ const handleUploadAction = (opts: {
     );
 
     const handleDevStreamError = Effect.fn("handleDevStreamError")(function* (
-      err: HttpClientError.ResponseError,
+      err: HttpClientError.HttpClientError,
       chunk: string,
     ) {
-      const schema = Schema.parseJson(
+      const schema = Schema.fromJsonString(
         Schema.Struct({ file: UploadedFileData }),
       );
-      const parsedChunk = yield* Schema.decodeUnknown(schema)(chunk);
+      const parsedChunk = yield* Schema.decodeUnknownEffect(schema)(chunk);
       const key = parsedChunk.file.key;
 
       yield* Effect.logError(
@@ -672,53 +699,50 @@ const handleUploadAction = (opts: {
     // Send metadata to UT server (non blocking as a daemon)
     // In dev, keep the stream open and simulate the callback requests as
     // files complete uploading
-    const fiber = yield* Effect.if(isDev, {
-      onTrue: () =>
-        metadataRequest.pipe(
-          Effect.tapBoth({
-            onSuccess: logHttpClientResponse("Registered metadata", {
-              mixin: "None", // We're reading the stream so can't call a body mixin
-            }),
-            onFailure: logHttpClientError("Failed to register metadata"),
-          }),
-          HttpClientResponse.stream,
-          handleJsonLineStream(MetadataFetchStreamPart, (chunk) =>
-            devHookRequest.pipe(
-              HttpClientRequest.setHeaders({
-                "uploadthing-hook": chunk.hook,
-                "x-uploadthing-signature": chunk.signature,
+    const fiber = yield* (
+      isDev
+        ? metadataRequest.pipe(
+            Effect.tap(
+              logHttpClientResponse("Registered metadata", {
+                mixin: "None", // We're reading the stream so can't call a body mixin
               }),
-              HttpClientRequest.setBody(
-                HttpBody.text(chunk.payload, "application/json"),
-              ),
-              httpClient.execute,
-              Effect.tap(
-                logHttpClientResponse(
-                  "Successfully forwarded callback request from dev stream",
-                ),
-              ),
-              Effect.catchTag("ResponseError", (err) =>
-                handleDevStreamError(err, chunk.payload),
-              ),
-              Effect.annotateLogs(chunk),
-              Effect.asVoid,
-              Effect.ignoreLogged,
-              Effect.scoped,
             ),
-          ),
-        ),
-      onFalse: () =>
-        metadataRequest.pipe(
-          Effect.tapBoth({
-            onSuccess: logHttpClientResponse("Registered metadata"),
-            onFailure: logHttpClientError("Failed to register metadata"),
-          }),
-          Effect.flatMap(
-            HttpClientResponse.schemaBodyJson(MetadataFetchResponse),
-          ),
-          Effect.scoped,
-        ),
-    }).pipe(Effect.forkDaemon);
+            Effect.tapError(logHttpClientError("Failed to register metadata")),
+            HttpClientResponse.stream,
+            handleJsonLineStream(MetadataFetchStreamPart, (chunk) =>
+              devHookRequest.pipe(
+                HttpClientRequest.setHeaders({
+                  "uploadthing-hook": chunk.hook,
+                  "x-uploadthing-signature": chunk.signature,
+                }),
+                HttpClientRequest.setBody(
+                  HttpBody.text(chunk.payload, "application/json"),
+                ),
+                httpClient.execute,
+                Effect.tap(
+                  logHttpClientResponse(
+                    "Successfully forwarded callback request from dev stream",
+                  ),
+                ),
+                Effect.catchTag("HttpClientError", (err) =>
+                  err.response !== undefined
+                    ? handleDevStreamError(err, chunk.payload)
+                    : Effect.fail(err),
+                ),
+                Effect.annotateLogs({ ...chunk }),
+                Effect.asVoid,
+                ignoreLogged,
+              ),
+            ),
+          )
+        : metadataRequest.pipe(
+            Effect.tap(logHttpClientResponse("Registered metadata")),
+            Effect.tapError(logHttpClientError("Failed to register metadata")),
+            Effect.flatMap(
+              HttpClientResponse.schemaBodyJson(MetadataFetchResponse),
+            ),
+          )
+    ).pipe(Effect.forkDetach);
 
     const presigneds = presignedUrls.map((p, i) => ({
       url: p.url,

@@ -3,6 +3,14 @@
   "compilerOptions": {
     "strict": true,
     "jsx": "react-native",
+    /**
+     * Effect v4 only exposes its submodules (e.g. `effect/Schema`) through
+     * package.json `exports` (no `typesVersions` fallback), which the legacy
+     * `node` resolution from expo/tsconfig.base cannot follow. Metro resolves
+     * package exports since Expo SDK 53, so `bundler` matches runtime behavior.
+     */
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "paths": {
       "~/*": ["./*"]
     }

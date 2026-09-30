@@ -1,10 +1,12 @@
+import * as Effect from "effect/Effect";
 import * as S from "effect/Schema";
+import * as SchemaTransformation from "effect/SchemaTransformation";
 
 import type { Json } from "@uploadthing/shared";
 import { ValidACLs, ValidContentDispositions } from "@uploadthing/shared";
 
-export const ContentDispositionSchema = S.Literal(...ValidContentDispositions);
-export const ACLSchema = S.Literal(...ValidACLs);
+export const ContentDispositionSchema = S.Literals(ValidContentDispositions);
+export const ACLSchema = S.Literals(ValidACLs);
 
 /**
  * Valid options for the `?actionType` query param
@@ -15,30 +17,36 @@ export const ActionType = S.Literal("upload");
  * Valid options for the `uploadthing-hook` header
  * for requests coming from UT server
  */
-export const UploadThingHook = S.Literal("callback", "error");
+export const UploadThingHook = S.Literals(["callback", "error"]);
 
 /**
  * =============================================================================
  * =========================== Configuration ===================================
  * =============================================================================
  */
-const DecodeString = S.transform(S.Uint8ArrayFromSelf, S.String, {
-  decode: (data) => new TextDecoder().decode(data),
-  encode: (data) => new TextEncoder().encode(data),
-});
+const DecodeString = S.Uint8Array.pipe(
+  S.decodeTo(
+    S.String,
+    SchemaTransformation.transform({
+      decode: (data) => new TextDecoder().decode(data),
+      encode: (data) => new TextEncoder().encode(data),
+    }),
+  ),
+);
 
 export const ParsedToken = S.Struct({
-  apiKey: S.Redacted(S.String.pipe(S.startsWith("sk_"))),
+  apiKey: S.RedactedFromValue(S.String.check(S.isStartsWith("sk_"))),
   appId: S.String,
   regions: S.NonEmptyArray(S.String),
   ingestHost: S.String.pipe(
-    S.optionalWith({ default: () => "ingest.uploadthing.com" }),
+    S.withDecodingDefault(Effect.succeed("ingest.uploadthing.com")),
+    S.withConstructorDefault(Effect.succeed("ingest.uploadthing.com")),
   ),
 });
 
 export const UploadThingToken = S.Uint8ArrayFromBase64.pipe(
-  S.compose(DecodeString),
-  S.compose(S.parseJson(ParsedToken)),
+  S.decodeTo(DecodeString),
+  S.decodeTo(S.fromJsonString(ParsedToken)),
 );
 
 /**
@@ -54,7 +62,7 @@ export class FileUploadData extends S.Class<FileUploadData>("FileUploadData")({
   name: S.String,
   size: S.Number,
   type: S.String,
-  lastModified: S.Number.pipe(S.optional),
+  lastModified: S.optional(S.Number),
 }) {}
 
 /**
@@ -145,5 +153,7 @@ export class UploadActionPayload extends S.Class<UploadActionPayload>(
   "UploadActionPayload",
 )({
   files: S.Array(FileUploadData),
-  input: S.Unknown as S.Schema<Json>,
+  // The key may be missing entirely on incoming payloads (treated as undefined),
+  // but consumers see it as `Json` like in previous versions.
+  input: S.optional(S.Unknown) as unknown as S.Codec<Json, Json>,
 }) {}

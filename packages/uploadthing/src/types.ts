@@ -40,7 +40,7 @@ export type inferErrorShape<TFileRoute extends AnyFileRoute> =
   TFileRoute["$types"]["errorShape"];
 
 export type RouteHandlerConfig = {
-  logLevel?: LogLevel.Literal;
+  logLevel?: LogLevel.LogLevel;
   /**
    * What format log entries should be in
    * @default "pretty" in development, else "json"

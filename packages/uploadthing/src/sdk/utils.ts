@@ -1,7 +1,7 @@
-import * as HttpClient from "@effect/platform/HttpClient";
-import * as HttpClientRequest from "@effect/platform/HttpClientRequest";
 import * as Effect from "effect/Effect";
 import * as Predicate from "effect/Predicate";
+import * as HttpClient from "effect/unstable/http/HttpClient";
+import * as HttpClientRequest from "effect/unstable/http/HttpClientRequest";
 
 import {
   generateKey,
@@ -35,7 +35,7 @@ export const downloadFile = (
   _url: MaybeUrl | UrlWithOverrides,
 ): Effect.Effect<UTFile, SerializedUploadThingError, HttpClient.HttpClient> =>
   Effect.gen(function* () {
-    let url = Predicate.isRecord(_url) ? _url.url : _url;
+    let url = Predicate.isObject(_url) ? _url.url : _url;
     if (typeof url === "string") {
       // since dataurls will result in name being too long, tell the user
       // to use uploadFiles instead.
@@ -53,7 +53,7 @@ export const downloadFile = (
     const {
       name = url.pathname.split("/").pop() ?? "unknown-filename",
       customId = undefined,
-    } = Predicate.isRecord(_url) ? _url : {};
+    } = Predicate.isObject(_url) ? _url : {};
     const httpClient = (yield* HttpClient.HttpClient).pipe(
       HttpClient.filterStatusOk,
     );
@@ -69,7 +69,6 @@ export const downloadFile = (
           data: cause.toJSON() as Json,
         } satisfies SerializedUploadThingError;
       }),
-      Effect.scoped,
     );
 
     return new UTFile([arrayBuffer], name, {
@@ -135,7 +134,7 @@ export const uploadFile = (
       Effect.catchTag("UploadThingError", (e) =>
         Effect.fail(UploadThingError.toObject(e)),
       ),
-      Effect.catchTag("ResponseError", (e) =>
+      Effect.catchTag("HttpClientError", (e) =>
         Effect.fail({
           code: "UPLOAD_FAILED",
           message: "Failed to upload file",

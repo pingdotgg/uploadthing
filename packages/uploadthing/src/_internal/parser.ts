@@ -1,7 +1,5 @@
 import type * as Standard from "@standard-schema/spec";
-import * as Cause from "effect/Cause";
 import * as Data from "effect/Data";
-import * as Runtime from "effect/Runtime";
 import * as Schema from "effect/Schema";
 
 import type { Json } from "@uploadthing/shared";
@@ -18,7 +16,7 @@ export type ParserZodEsque<TInput extends Json, TParsedInput> = {
 export type JsonParser<In extends Json, Out = In> =
   | ParserZodEsque<In, Out>
   | Standard.StandardSchemaV1<In, Out>
-  | Schema.Schema<Out, In>;
+  | Schema.Codec<Out, In>;
 
 export class ParserError extends Data.TaggedError("ParserError")<{
   cause: unknown;
@@ -44,14 +42,10 @@ export function getParseFn<
      * Effect Schema
      */
     return (value) =>
-      Schema.decodeUnknownPromise(parser as Schema.Schema<any, TOut>)(
+      Schema.decodeUnknownPromise(parser as Schema.Codec<TOut, any>)(
         value,
       ).catch((error) => {
-        throw new ParserError({
-          cause: Cause.squash(
-            (error as Runtime.FiberFailure)[Runtime.FiberFailureCauseId],
-          ),
-        });
+        throw new ParserError({ cause: error });
       });
   }
 

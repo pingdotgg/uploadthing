@@ -1,8 +1,8 @@
-import * as Micro from "effect/Micro";
+import * as Data from "effect/Data";
 import * as Predicate from "effect/Predicate";
 
 export class InvalidRouteConfigError
-  extends /** #__PURE__ */ Micro.TaggedError("InvalidRouteConfig")<{
+  extends /** #__PURE__ */ Data.TaggedError("InvalidRouteConfig")<{
     reason: string;
   }>
 {
@@ -15,7 +15,7 @@ export class InvalidRouteConfigError
 }
 
 export class UnknownFileTypeError
-  extends /** #__PURE__ */ Micro.TaggedError("UnknownFileType")<{
+  extends /** #__PURE__ */ Data.TaggedError("UnknownFileType")<{
     reason: string;
   }>
 {
@@ -26,7 +26,7 @@ export class UnknownFileTypeError
 }
 
 export class InvalidFileTypeError
-  extends /** #__PURE__ */ Micro.TaggedError("InvalidFileType")<{
+  extends /** #__PURE__ */ Data.TaggedError("InvalidFileType")<{
     reason: string;
   }>
 {
@@ -37,7 +37,7 @@ export class InvalidFileTypeError
 }
 
 export class InvalidFileSizeError
-  extends /** #__PURE__ */ Micro.TaggedError("InvalidFileSize")<{
+  extends /** #__PURE__ */ Data.TaggedError("InvalidFileSize")<{
     reason: string;
   }>
 {
@@ -48,7 +48,7 @@ export class InvalidFileSizeError
 }
 
 export class InvalidURLError
-  extends /** #__PURE__ */ Micro.TaggedError("InvalidURL")<{
+  extends /** #__PURE__ */ Data.TaggedError("InvalidURL")<{
     reason: string;
   }>
 {
@@ -58,10 +58,10 @@ export class InvalidURLError
 }
 
 export class RetryError
-  extends /** #__PURE__ */ Micro.TaggedError("RetryError") {}
+  extends /** #__PURE__ */ Data.TaggedError("RetryError") {}
 
 export class FetchError
-  extends /** #__PURE__ */ Micro.TaggedError("FetchError")<{
+  extends /** #__PURE__ */ Data.TaggedError("FetchError")<{
     readonly input: {
       url: string;
       method: string | undefined;
@@ -72,20 +72,20 @@ export class FetchError
   }> {}
 
 export class InvalidJsonError
-  extends /** #__PURE__ */ Micro.TaggedError("InvalidJson")<{
+  extends /** #__PURE__ */ Data.TaggedError("InvalidJson")<{
     readonly input: unknown;
     readonly error: unknown;
   }> {}
 
 export class BadRequestError<T = unknown>
-  extends /** #__PURE__ */ Micro.TaggedError("BadRequestError")<{
+  extends /** #__PURE__ */ Data.TaggedError("BadRequestError")<{
     readonly message: string;
     readonly status: number;
     readonly json: T;
   }>
 {
   getMessage() {
-    if (Predicate.isRecord(this.json)) {
+    if (Predicate.isObject(this.json)) {
       if (typeof this.json.message === "string") return this.json.message;
     }
     return this.message;
@@ -93,7 +93,7 @@ export class BadRequestError<T = unknown>
 }
 
 export class UploadPausedError
-  extends /** #__PURE__ */ Micro.TaggedError("UploadAborted") {}
+  extends /** #__PURE__ */ Data.TaggedError("UploadAborted") {}
 
 export class UploadAbortedError
-  extends /** #__PURE__ */ Micro.TaggedError("UploadAborted") {}
+  extends /** #__PURE__ */ Data.TaggedError("UploadAborted") {}

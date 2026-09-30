@@ -3,45 +3,26 @@ import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
 import * as S from "effect/Schema";
 
-import {
-  filterDefinedObjectValues,
-  UploadThingError,
-} from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared";
 
 import { UploadThingToken } from "./shared-schemas";
 
 export { version as UPLOADTHING_VERSION } from "../../package.json";
 
 /**
- * Merge in `import.meta.env` to the built-in `process.env` provider
+ * The built-in `ConfigProvider.fromEnv` provider merges `process.env` and
+ * `import.meta.env` out of the box. It snapshots the environment when it is
+ * created, so it's constructed lazily to pick up late `process.env` mutations.
  * Prefix keys with `UPLOADTHING_` so we can reference just the name.
  * @example
  * process.env.UPLOADTHING_TOKEN = "foo"
  * Config.string("token"); // Config<"foo">
  */
-const envProvider = ConfigProvider.fromEnv().pipe(
-  ConfigProvider.orElse(() =>
-    ConfigProvider.fromMap(
-      new Map(
-        Object.entries(
-          filterDefinedObjectValues(
-            // fuck this I give up. import.meta is a mistake, someone else can fix it
-            (
-              import.meta as unknown as
-                | { env: Record<string, string> }
-                | undefined
-            )?.env ?? {},
-          ),
-        ),
-      ),
-      {
-        pathDelim: "_",
-      },
-    ),
-  ),
-  ConfigProvider.nested("uploadthing"),
-  ConfigProvider.constantCase,
-);
+const envProvider = () =>
+  ConfigProvider.fromEnv().pipe(
+    ConfigProvider.nested("uploadthing"),
+    ConfigProvider.constantCase,
+  );
 
 /**
  * Config provider that merges the options from the object
@@ -49,8 +30,8 @@ const envProvider = ConfigProvider.fromEnv().pipe(
  * @remarks Options take precedence over environment variables.
  */
 export const configProvider = (options: unknown) =>
-  ConfigProvider.fromJson(options ?? {}).pipe(
-    ConfigProvider.orElse(() => envProvider),
+  ConfigProvider.fromUnknown(options ?? {}).pipe(
+    ConfigProvider.orElse(envProvider()),
   );
 
 export const IsDevelopment = Config.boolean("isDev").pipe(
@@ -62,23 +43,35 @@ export const IsDevelopment = Config.boolean("isDev").pipe(
   Config.withDefault(false),
 );
 
-export const UTToken = S.Config("token", UploadThingToken).pipe(
-  Effect.catchTags({
-    ConfigError: (e) =>
+export const UTToken = Config.string("token").pipe(
+  Effect.catchTag(
+    "ConfigError",
+    (e) =>
       new UploadThingError({
-        code: e._op === "InvalidData" ? "INVALID_SERVER_CONFIG" : "MISSING_ENV",
+        code: "MISSING_ENV",
         message:
-          e._op === "InvalidData"
-            ? "Invalid token. A token is a base64 encoded JSON object matching { apiKey: string, appId: string, regions: string[] }."
-            : "Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a token manually through config.",
+          "Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a token manually through config.",
         cause: e,
       }),
-  }),
+  ),
+  Effect.flatMap((rawToken) =>
+    S.decodeUnknownEffect(UploadThingToken)(rawToken).pipe(
+      Effect.catchTag(
+        "SchemaError",
+        (e) =>
+          new UploadThingError({
+            code: "INVALID_SERVER_CONFIG",
+            message:
+              "Invalid token. A token is a base64 encoded JSON object matching { apiKey: string, appId: string, regions: string[] }.",
+            cause: e,
+          }),
+      ),
+    ),
+  ),
 );
 
-export const ApiUrl = Config.string("apiUrl").pipe(
-  Config.withDefault("https://api.uploadthing.com"),
-  Config.mapAttempt((_) => new URL(_)),
+export const ApiUrl = Config.url("apiUrl").pipe(
+  Config.withDefault(new URL("https://api.uploadthing.com")),
   Config.map((url) => url.href.replace(/\/$/, "")),
 );
 
@@ -91,9 +84,8 @@ export const IngestUrl = Effect.fn(function* (
     ? (regions.find((r) => r === preferredRegion) ?? regions[0])
     : regions[0];
 
-  return yield* Config.string("ingestUrl").pipe(
-    Config.withDefault(`https://${region}.${ingestHost}`),
-    Config.mapAttempt((_) => new URL(_)),
+  return yield* Config.url("ingestUrl").pipe(
+    Config.withDefault(new URL(`https://${region}.${ingestHost}`)),
     Config.map((url) => url.href.replace(/\/$/, "")),
   );
 });
@@ -106,7 +98,7 @@ export const UfsHost = Config.string("ufsHost").pipe(
   Config.withDefault("ufs.sh"),
 );
 
-export const UfsAppIdLocation = Config.literal(
-  "subdomain",
-  "path",
-)("ufsAppIdLocation").pipe(Config.withDefault("subdomain"));
+export const UfsAppIdLocation = Config.literals(
+  ["subdomain", "path"],
+  "ufsAppIdLocation",
+).pipe(Config.withDefault("subdomain"));
