@@ -3,15 +3,17 @@ import type { JSX } from "solid-js/jsx-runtime";
 import type { RenderFunction, StyleValue } from "vue";
 
 /**
- * Use granular imports to better tree-shake
- * We don't need all the types, and `/application`
- * entrypoint is ~7k gzip which we can shave off
+ * Prefer granular mime-type imports for tree-shaking. `application` is included
+ * so specific MIME keys (e.g. `application/java-archive`) can resolve their
+ * file extensions for Windows file-picker `accept` filters.
  */
+import { application } from "@uploadthing/mime-types/application";
 import { audio } from "@uploadthing/mime-types/audio";
 import { image } from "@uploadthing/mime-types/image";
 import { text } from "@uploadthing/mime-types/text";
 import { video } from "@uploadthing/mime-types/video";
 
+import type { AcceptProp } from "./dropzone-utils";
 import type { ExpandedRouteConfig } from "./types";
 import { objectKeys } from "./utils";
 
@@ -25,6 +27,29 @@ export const roundProgress = (
   return Math.floor(progress / 10) * 10;
 };
 
+const mimeTables: Array<Record<string, { extensions: readonly string[] }>> = [
+  application,
+  audio,
+  image,
+  text,
+  video,
+];
+
+/**
+ * Look up dotted extensions for a specific MIME type from the vendored tables.
+ * Used so HTML `accept` and dropzone filters include both the MIME and e.g.
+ * `.jar`, which Windows Chrome needs when the MIME alone is ignored.
+ */
+const extensionsForMime = (mime: string): string[] => {
+  for (const table of mimeTables) {
+    const entry = table[mime];
+    if (entry) {
+      return entry.extensions.map((ext) => `.${ext}`);
+    }
+  }
+  return [];
+};
+
 export const generateMimeTypes = (
   typesOrRouteConfig: string[] | ExpandedRouteConfig,
 ) => {
@@ -34,8 +59,14 @@ export const generateMimeTypes = (
   if (fileTypes.includes("blob")) return [];
 
   return fileTypes.map((type) => {
-    if (type === "pdf") return "application/pdf";
-    if (type.includes("/")) return type;
+    if (type === "pdf") {
+      return ["application/pdf", ...extensionsForMime("application/pdf")].join(
+        ", ",
+      );
+    }
+    if (type.includes("/")) {
+      return [type, ...extensionsForMime(type)].join(", ");
+    }
 
     // Add wildcard to support all subtypes, e.g. image => "image/*"
     // But some browsers/OSes don't support it, so we'll also dump all the mime types
@@ -49,9 +80,57 @@ export const generateMimeTypes = (
   });
 };
 
-export const generateClientDropzoneAccept = (fileTypes: string[]) => {
-  const mimeTypes = generateMimeTypes(fileTypes);
-  return Object.fromEntries(mimeTypes.map((type) => [type, []]));
+export const generateClientDropzoneAccept = (
+  fileTypes: string[],
+): AcceptProp => {
+  if (fileTypes.includes("blob")) return {};
+
+  const accept: AcceptProp = {};
+
+  for (const type of fileTypes) {
+    if (type === "pdf") {
+      accept["application/pdf"] = extensionsForMime("application/pdf");
+      continue;
+    }
+
+    if (type.includes("/")) {
+      accept[type] = extensionsForMime(type);
+      continue;
+    }
+
+    if (type === "audio") {
+      accept["audio/*"] = [];
+      for (const mime of objectKeys(audio)) {
+        accept[mime] = extensionsForMime(mime);
+      }
+      continue;
+    }
+    if (type === "image") {
+      accept["image/*"] = [];
+      for (const mime of objectKeys(image)) {
+        accept[mime] = extensionsForMime(mime);
+      }
+      continue;
+    }
+    if (type === "text") {
+      accept["text/*"] = [];
+      for (const mime of objectKeys(text)) {
+        accept[mime] = extensionsForMime(mime);
+      }
+      continue;
+    }
+    if (type === "video") {
+      accept["video/*"] = [];
+      for (const mime of objectKeys(video)) {
+        accept[mime] = extensionsForMime(mime);
+      }
+      continue;
+    }
+
+    accept[`${type}/*`] = [];
+  }
+
+  return accept;
 };
 
 export function getFilesFromClipboardEvent(event: ClipboardEvent) {

@@ -1,7 +1,11 @@
 import * as E from "effect/Effect";
 import { describe, expect, it } from "vitest";
 
-import { generateMimeTypes } from "../src/component-utils";
+import {
+  generateClientDropzoneAccept,
+  generateMimeTypes,
+} from "../src/component-utils";
+import { acceptPropAsAcceptAttr } from "../src/dropzone-utils";
 import { fillInputRouteConfig } from "../src/utils";
 
 describe("generateMimeTypes", () => {
@@ -36,5 +40,35 @@ describe("generateMimeTypes", () => {
     expect(videoMimes).toContain("video/*");
     expect(videoMimes).toContain("video/mp4");
     expect(videoMimes).toContain("video/webm");
+  });
+
+  it("includes file extensions for specific MIME types", () => {
+    const [jarAccept] = generateMimeTypes(["application/java-archive"]);
+    expect(jarAccept).toContain("application/java-archive");
+    expect(jarAccept).toContain(".jar");
+    expect(jarAccept).toContain(".war");
+    expect(jarAccept).toContain(".ear");
+
+    const [pdfAccept] = generateMimeTypes(["pdf"]);
+    expect(pdfAccept).toContain("application/pdf");
+    expect(pdfAccept).toContain(".pdf");
+  });
+});
+
+describe("generateClientDropzoneAccept", () => {
+  it("maps specific MIME types to their extensions for the file picker", () => {
+    const accept = generateClientDropzoneAccept(["application/java-archive"]);
+    expect(accept).toEqual({
+      "application/java-archive": [".jar", ".war", ".ear"],
+    });
+
+    const acceptAttr = acceptPropAsAcceptAttr(accept);
+    expect(acceptAttr).toContain("application/java-archive");
+    expect(acceptAttr).toContain(".jar");
+  });
+
+  it("returns an empty accept map when blob is allowed", () => {
+    expect(generateClientDropzoneAccept(["blob"])).toEqual({});
+    expect(generateClientDropzoneAccept(["image", "blob"])).toEqual({});
   });
 });
