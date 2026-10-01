@@ -1,5 +1,14 @@
 # @uploadthing/mime-types
 
+## 0.3.7
+
+### Patch Changes
+
+- [#1257](https://github.com/pingdotgg/uploadthing/pull/1257)
+  [`d20c5ba`](https://github.com/pingdotgg/uploadthing/commit/d20c5ba5ed3781ebcea315bf9c10ebaedac3c407)
+  Thanks [@ahkhanjani](https://github.com/ahkhanjani)! - feat: Add wav mime type
+  support
+
 ## 0.3.6
 
 ### Patch Changes

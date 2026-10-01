@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.15",
-    "@uploadthing/react": "7.3.3",
+    "@uploadthing/react": "7.3.4",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",
     "lucide-react": "^0.469.0",
@@ -22,7 +22,7 @@
     "react-dom": "19.2.2",
     "sonner": "^2.0.3",
     "tailwind-merge": "^2.2.1",
-    "uploadthing": "7.7.4",
+    "uploadthing": "7.7.5",
     "use-debounce": "^10.0.4"
   },
   "devDependencies": {

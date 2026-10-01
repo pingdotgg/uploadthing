@@ -8,7 +8,7 @@
     "url": "github:pingdotgg/uploadthing",
     "directory": "packages/solid"
   },
-  "version": "7.3.3",
+  "version": "7.3.4",
   "main": "./dist/server.cjs",
   "module": "./dist/server.js",
   "types": "./dist/index.d.ts",
