@@ -10,46 +10,53 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/types.d.ts",
+      "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
+      "style": "./dist/runtime/uploadthing-tw.css"
     }
   },
-  "main": "./dist/module.cjs",
-  "types": "./dist/types.d.ts",
+  "main": "./dist/module.mjs",
+  "typesVersions": {
+    "*": {
+      ".": ["./dist/types.d.mts"]
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "lint": "eslint src --max-warnings 0",
-    "build": "nuxt-module-build build && tsc && bun run postbuild.ts",
+    "build": "nuxt-module-build build && tsc",
     "clean": "git clean -xdf .nuxt dist node_modules",
     "dev": "nuxi dev playground --port 3010",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "prepack": "bun ../../.github/replace-workspace-protocol.ts",
+    "dev:prepack": "nuxt-module-build build",
     "FIXME__test": "vitest run",
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.15.0",
+    "@nuxt/kit": "^4.4.2",
     "@uploadthing/vue": "workspace:*",
-    "defu": "^6.1.4"
+    "defu": "^6.1.7",
+    "pathe": "^2.0.3"
   },
   "devDependencies": {
-    "@nuxt/devtools": "1.7.0",
-    "@nuxt/module-builder": "^0.8.4",
-    "@nuxt/schema": "^3.15.0",
-    "@nuxtjs/tailwindcss": "^6.12.2",
+    "@nuxt/devtools": "^3.2.4",
+    "@nuxt/module-builder": "^1.0.2",
+    "@nuxt/schema": "^4.4.2",
+    "@nuxt/test-utils": "^4.0.2",
     "@uploadthing/eslint-config": "workspace:*",
     "eslint": "9.25.1",
     "h3": "^1.13.0",
-    "nuxt": "^3.15.0",
+    "nuxt": "^4.4.2",
     "uploadthing": "workspace:*",
     "vite": "^6.3.4",
     "vitest": "3.2.4"
   },
   "peerDependencies": {
-    "uploadthing": "^7.2.0"
+    "uploadthing": "^7.2.0",
+    "nuxt": "^4.0.0"
   }
 }
