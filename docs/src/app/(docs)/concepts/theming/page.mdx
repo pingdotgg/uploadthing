@@ -493,6 +493,32 @@ type UploadDropzoneProps = {
 };
 ```
 
+Each `ContentField` can be a fixed value or a callback. Callback fields receive
+the current component state, so you can change the copy for loading, uploading,
+dragging, and selected-file states. `UploadDropzone` callbacks also receive
+`isDragActive`; both components expose `ready`, `isUploading`, `uploadProgress`,
+`fileTypes`, and `files` where applicable.
+
+For example, a dropzone can show different translated labels while it is
+preparing, while the user is dragging files over it, and after files have been
+selected:
+
+```jsx
+<UploadDropzone
+  endpoint="mockRoute"
+  content={{
+    label({ ready, isDragActive }) {
+      if (!ready) return "Preparing...";
+      if (isDragActive) return "Drop files here";
+      return "Drag files here";
+    },
+    button({ files }) {
+      return files.length ? `Upload ${files.length} file(s)` : "Choose files";
+    },
+  }}
+/>
+```
+
 <Note>
   When you take over the `content` of an element, you get full responsibility to
   control the different states of the component. For example, if you customize
@@ -528,3 +554,37 @@ type UploadDropzoneProps = {
 <d.CustomContent1 />
 <d.CustomContent2 />
 <d.CustomContent3 />
+
+### Internationalization
+
+UploadThing does not bundle translations for its components. Instead, use the
+`content` prop to provide copy from your application's translation catalog. A
+content callback receives the component state, so translated content can still
+show loading and upload progress:
+
+```tsx
+const french = {
+  loading: "Chargement...",
+  chooseFiles: "Choisir des fichiers",
+  uploading: "Téléversement",
+  allowedContent: "Images jusqu'à 4 Mo",
+};
+
+<UploadButton
+  endpoint="imageUploader"
+  content={{
+    button({ ready, isUploading, uploadProgress }) {
+      if (!ready) return french.loading;
+      if (isUploading) {
+        return `${french.uploading} ${Math.round(uploadProgress)}\u00a0%`;
+      }
+      return french.chooseFiles;
+    },
+    allowedContent: french.allowedContent,
+  }}
+/>;
+```
+
+The same approach works with `UploadDropzone`. Supply translated content for its
+`label`, `button`, and `allowedContent` fields, and keep any state-specific copy
+in callbacks.
