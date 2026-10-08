@@ -208,19 +208,22 @@ export function semverLite(required: string, toCheck: string) {
 
   const [_1, rMajor, rMinor, rPatch] = requiredMatch;
   const [_2, cMajor, cMinor, cPatch] = toCheckMatch;
+  const meetsMinimum =
+    Number(cMinor ?? 0) > Number(rMinor ?? 0) ||
+    (Number(cMinor ?? 0) === Number(rMinor ?? 0) &&
+      Number(cPatch ?? 0) >= Number(rPatch ?? 0));
 
   if (required.startsWith("^")) {
     // Major must be equal, minor must be greater or equal
     if (rMajor !== cMajor) return false;
-    if (rMinor && cMinor && rMinor > cMinor) return false;
-    return true;
+    return meetsMinimum;
   }
 
   if (required.startsWith("~")) {
     // Major must be equal, minor must be equal
     if (rMajor !== cMajor) return false;
     if (rMinor !== cMinor) return false;
-    return true;
+    return Number(cPatch ?? 0) >= Number(rPatch ?? 0);
   }
 
   // Exact match
